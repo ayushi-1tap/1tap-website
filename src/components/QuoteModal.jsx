@@ -1,61 +1,61 @@
-import { useState, useEffect } from "react";
-import { X, Mail, ChevronDown } from "lucide-react";
+import { useState, useEffect, useMemo, useRef } from "react";
+import { X, Mail } from "lucide-react";
+import intlTelInput from "intl-tel-input";
+import { createLeadFromWebsite } from "../utils/api";
 
 const QuoteModal = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
     phone: "",
-    countryCode: "+971",
   });
-  const [countries, setCountries] = useState([]);
-  const [isLoadingCountries, setIsLoadingCountries] = useState(true);
-  const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
+  const phoneInputRef = useRef(null);
+  const itiRef = useRef(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [touched, setTouched] = useState({
+    fullName: false,
+    email: false,
+    phone: false,
+  });
 
-  // Fetch countries from API
+  // Initialize intl-tel-input and detect user country
   useEffect(() => {
-    const fetchCountries = async () => {
+    if (!phoneInputRef.current || !isOpen) return;
+
+    // Detect user country
+    const detectCountry = async () => {
       try {
-        setIsLoadingCountries(true);
-        const response = await fetch(
-          "https://restcountries.com/v3.1/all?fields=name,cca2,flag,idd"
-        );
+        const response = await fetch("https://api.country.is");
         const data = await response.json();
-
-        // Map API data to our format
-        const mappedCountries = data
-          .filter((country) => country.idd?.root && country.idd?.suffixes?.[0])
-          .map((country) => ({
-            code: `${country.idd.root}${country.idd.suffixes[0]}`,
-            flag: country.flag,
-            country: country.name.common,
-            cca2: country.cca2,
-          }))
-          .sort((a, b) => a.country.localeCompare(b.country));
-
-        setCountries(mappedCountries);
-
-        // Set default to UAE if available
-        const uae = mappedCountries.find((c) => c.code === "+971");
-        if (uae) {
-          setFormData((prev) => ({ ...prev, countryCode: "+971" }));
-        }
+        const countryCode = data?.country || "AE"; // Fallback to AE
+        return countryCode.toLowerCase();
       } catch (error) {
-        console.error("Error fetching countries:", error);
-        // Fallback to a few common countries if API fails
-        setCountries([
-          { code: "+971", flag: "🇦🇪", country: "United Arab Emirates" },
-          { code: "+1", flag: "🇺🇸", country: "United States" },
-          { code: "+44", flag: "🇬🇧", country: "United Kingdom" },
-          { code: "+91", flag: "🇮🇳", country: "India" },
-        ]);
-      } finally {
-        setIsLoadingCountries(false);
+        console.error("Error detecting country:", error);
+        return "ae"; // Fallback to AE
       }
     };
 
-    fetchCountries();
-  }, []);
+    const initIntlTelInput = async () => {
+      const defaultCountry = await detectCountry();
+
+      itiRef.current = intlTelInput(phoneInputRef.current, {
+        initialCountry: defaultCountry,
+        preferredCountries: ["ae", "us", "gb", "in"],
+        utilsScript:
+          "https://cdn.jsdelivr.net/npm/intl-tel-input@25.15.0/build/js/utils.js",
+      });
+    };
+
+    initIntlTelInput();
+
+    return () => {
+      if (itiRef.current) {
+        itiRef.current.destroy();
+      }
+    };
+  }, [isOpen]);
 
   // Handle Escape key to close modal
   useEffect(() => {
@@ -77,24 +77,204 @@ const QuoteModal = ({ isOpen, onClose }) => {
     };
   }, [isOpen, onClose]);
 
-  const selectedCountry = countries.find(
-    (c) => c.code === formData.countryCode
-  );
+  // Validation logic
+  const errors = useMemo(() => {
+    const e = {};
+    if (!formData.fullName.trim()) {
+      e.fullName = "Full Name is required.";
+    } else if (formData.fullName.trim().length < 2) {
+      e.fullName = "Full Name must be at least 2 characters.";
+    } else if (!/^[a-zA-Z\s'-]+$/.test(formData.fullName.trim())) {
+      e.fullName =
+        "Full Name should only contain letters, spaces, hyphens, and apostrophes.";
+    }
+
+    if (!formData.email.trim()) {
+      e.email = "Business Email is required.";
+    } else if (!/^\S+@\S+\.\S+$/.test(formData.email.trim())) {
+      e.email = "Please enter a valid email address.";
+    }
+
+    // Get the actual value from the input element for validation
+    const phoneInputValue = phoneInputRef.current?.value || formData.phone;
+    if (!phoneInputValue || !phoneInputValue.trim()) {
+      e.phone = "Phone Number is required.";
+    } else if (itiRef.current) {
+      // Check if utils are loaded before using strict validation
+      const utilsLoaded = window.intlTelInputUtils !== undefined;
+      if (utilsLoaded) {
+        // Use strict validation only if utils are loaded
+        if (!itiRef.current.isValidNumber()) {
+          e.phone = "Please enter a valid phone number.";
+        }
+      } else {
+        // Fallback: check if there are enough digits (at least 7)
+        const digitsOnly = phoneInputValue.replace(/\D/g, "");
+        if (digitsOnly.length < 7) {
+          e.phone = "Phone Number must be at least 7 digits.";
+        }
+      }
+    } else {
+      // Fallback validation if intl-tel-input isn't initialized yet
+      const digitsOnly = phoneInputValue.trim().replace(/\D/g, "");
+      if (digitsOnly.length < 7) {
+        e.phone = "Phone Number must be at least 7 digits.";
+      }
+    }
+
+    return e;
+  }, [formData]);
+
+  const isValid = Object.keys(errors).length === 0;
+
+  // Helper function to parse full name
+  const parseFullName = (fullNameValue) => {
+    const parts = fullNameValue.trim().split(/\s+/).filter(Boolean);
+    let firstName = null,
+      middleName = null,
+      lastName = null;
+
+    switch (parts.length) {
+      case 0:
+        break;
+      case 1:
+        firstName = parts[0];
+        break;
+      case 2:
+        [firstName, lastName] = parts;
+        break;
+      case 3:
+        [firstName, middleName, lastName] = parts;
+        break;
+      default:
+        // 4 or more: first two → firstName, last two → lastName, drop any extra
+        firstName = parts.slice(0, 2).join(" ");
+        lastName = parts.slice(-2).join(" ");
+        break;
+    }
+
+    return {
+      firstName,
+      ...(middleName && { middleName }),
+      ...(lastName && { lastName }),
+    };
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    // Filter out alphabets for phone number - only allow numbers, spaces, hyphens, parentheses, and plus
+    const filteredValue =
+      name === "phone" ? value.replace(/[^0-9\s\-()+]/g, "") : value;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: filteredValue,
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleBlur = (field) => () => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+    // Sync state with intl-tel-input's formatted value for phone
+    if (field === "phone" && phoneInputRef.current && itiRef.current) {
+      const formattedValue = phoneInputRef.current.value;
+      setFormData((prev) => ({ ...prev, phone: formattedValue }));
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission here
-    console.log("Form submitted:", formData);
-    // You can add your API call here
-    onClose();
+    setTouched({
+      fullName: true,
+      email: true,
+      phone: true,
+    });
+
+    if (!isValid) {
+      console.log("Quote Modal Form validation failed:", errors);
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+    setSubmitSuccess(false);
+
+    try {
+      const parsedName = parseFullName(formData.fullName);
+
+      // Get phone number and country code separately from intl-tel-input
+      let phoneNumberValue = formData.phone.trim();
+      let countryCode = "+971"; // Default to UAE
+
+      if (itiRef.current) {
+        // Get country data to extract dial code
+        const countryData = itiRef.current.getSelectedCountryData();
+        if (countryData && countryData.dialCode) {
+          countryCode = `+${countryData.dialCode}`;
+        }
+
+        // Get the full number in E.164 format and extract just the number part
+        const fullNumber = itiRef.current.getNumber();
+        if (fullNumber) {
+          // Remove the country code prefix to get just the number
+          const dialCode = countryData?.dialCode || "971";
+          phoneNumberValue = fullNumber
+            .replace(`+${dialCode}`, "")
+            .replace(/\D/g, "");
+        } else {
+          // Fallback: use the input value and remove any country code if present
+          phoneNumberValue = formData.phone.replace(/\D/g, "");
+        }
+      } else {
+        // Fallback if intl-tel-input isn't initialized
+        phoneNumberValue = formData.phone.replace(/\D/g, "");
+      }
+
+      const payload = {
+        ...parsedName,
+        email: formData.email.trim(),
+        phone: phoneNumberValue,
+        countryCode: countryCode,
+        source: "Website",
+      };
+
+      console.log("Quote Modal Form Submitted:", payload);
+
+      await createLeadFromWebsite(payload);
+
+      setSubmitSuccess(true);
+      console.log("Lead created successfully");
+
+      // Reset form immediately after successful submission
+      setFormData({
+        fullName: "",
+        email: "",
+        phone: "",
+      });
+      setTouched({
+        fullName: false,
+        email: false,
+        phone: false,
+      });
+
+      // Reset intl-tel-input to default country
+      if (itiRef.current && phoneInputRef.current) {
+        itiRef.current.setCountry("ae"); // Reset to default country
+        phoneInputRef.current.value = "";
+      }
+
+      // Clear success message and close modal after 2 seconds
+      setTimeout(() => {
+        setSubmitSuccess(false);
+        onClose();
+      }, 2000);
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      setSubmitError(
+        error.response?.data?.message ||
+          "Failed to submit form. Please try again."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -147,7 +327,7 @@ const QuoteModal = ({ isOpen, onClose }) => {
               className="block text-sm font-medium mb-2"
               style={{ color: "var(--color-text-primary)" }}
             >
-              Full Name
+              Full Name <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -155,11 +335,13 @@ const QuoteModal = ({ isOpen, onClose }) => {
               value={formData.fullName}
               onChange={handleChange}
               placeholder="Your Name"
-              required
               className="w-full h-11 px-4 rounded-lg border outline-none transition-all duration-300 focus:ring-2 focus:scale-[1.02] focus:shadow-md placeholder:text-[var(--why-choose-secondary)]/60"
               style={{
                 backgroundColor: "white",
-                borderColor: "var(--color-primary-500)",
+                borderColor:
+                  touched.fullName && errors.fullName
+                    ? "#ef4444"
+                    : "var(--color-primary-500)",
                 color: "var(--color-text-primary)",
               }}
               onFocus={(e) => {
@@ -167,10 +349,17 @@ const QuoteModal = ({ isOpen, onClose }) => {
                 e.target.style.boxShadow = "0 0 0 2px rgba(12, 120, 220, 0.2)";
               }}
               onBlur={(e) => {
-                e.target.style.borderColor = "var(--color-primary-500)";
+                handleBlur("fullName")();
+                e.target.style.borderColor =
+                  touched.fullName && errors.fullName
+                    ? "#ef4444"
+                    : "var(--color-primary-500)";
                 e.target.style.boxShadow = "none";
               }}
             />
+            {touched.fullName && errors.fullName && (
+              <p className="mt-1 text-xs text-red-500">{errors.fullName}</p>
+            )}
           </div>
 
           {/* Business Email */}
@@ -179,7 +368,7 @@ const QuoteModal = ({ isOpen, onClose }) => {
               className="block text-sm font-medium mb-2"
               style={{ color: "var(--color-text-primary)" }}
             >
-              Business Email
+              Business Email <span className="text-red-500">*</span>
             </label>
             <input
               type="email"
@@ -187,11 +376,13 @@ const QuoteModal = ({ isOpen, onClose }) => {
               value={formData.email}
               onChange={handleChange}
               placeholder="name@company.com"
-              required
               className="w-full h-11 px-4 rounded-lg border outline-none transition-all duration-300 focus:ring-2 focus:scale-[1.02] focus:shadow-md placeholder:text-[var(--why-choose-secondary)]/60"
               style={{
                 backgroundColor: "white",
-                borderColor: "var(--color-primary-500)",
+                borderColor:
+                  touched.email && errors.email
+                    ? "#ef4444"
+                    : "var(--color-primary-500)",
                 color: "var(--color-text-primary)",
               }}
               onFocus={(e) => {
@@ -199,10 +390,17 @@ const QuoteModal = ({ isOpen, onClose }) => {
                 e.target.style.boxShadow = "0 0 0 2px rgba(12, 120, 220, 0.2)";
               }}
               onBlur={(e) => {
-                e.target.style.borderColor = "var(--color-primary-500)";
+                handleBlur("email")();
+                e.target.style.borderColor =
+                  touched.email && errors.email
+                    ? "#ef4444"
+                    : "var(--color-primary-500)";
                 e.target.style.boxShadow = "none";
               }}
             />
+            {touched.email && errors.email && (
+              <p className="mt-1 text-xs text-red-500">{errors.email}</p>
+            )}
           </div>
 
           {/* Phone Number */}
@@ -213,109 +411,21 @@ const QuoteModal = ({ isOpen, onClose }) => {
             >
               Phone Number
             </label>
-            <div className="flex gap-2">
-              {/* Country Code Dropdown */}
-              <div className="relative z-50">
-                <button
-                  type="button"
-                  onClick={() =>
-                    setIsCountryDropdownOpen(!isCountryDropdownOpen)
-                  }
-                  disabled={isLoadingCountries}
-                  className="h-11 min-w-[100px] flex items-center gap-2 rounded-lg border px-3 text-sm outline-none transition-all duration-300 hover:scale-[1.02] hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-                  style={{
-                    backgroundColor: "white",
-                    borderColor: "var(--color-primary-500)",
-                    color: "var(--color-text-primary)",
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = "var(--color-primary-600)";
-                    e.target.style.boxShadow =
-                      "0 0 0 2px rgba(12, 120, 220, 0.2)";
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = "var(--color-primary-500)";
-                    e.target.style.boxShadow = "none";
-                  }}
-                >
-                  <span className="text-base">
-                    {selectedCountry?.flag || "🌍"}
-                  </span>
-                  <span className="text-xs">
-                    {selectedCountry?.code || formData.countryCode}
-                  </span>
-                  <ChevronDown className="h-3 w-3 ml-auto" />
-                </button>
-
-                {isCountryDropdownOpen && (
-                  <>
-                    <div
-                      className="fixed inset-0 z-[40]"
-                      onClick={() => setIsCountryDropdownOpen(false)}
-                    />
-                    <div
-                      className="absolute top-full left-0 mt-1 z-[50] w-64 rounded-lg border shadow-lg max-h-40 overflow-y-auto"
-                      style={{
-                        backgroundColor: "white",
-                        borderColor: "var(--color-primary-500)",
-                      }}
-                    >
-                      {isLoadingCountries ? (
-                        <div
-                          className="px-3 py-4 text-sm text-center"
-                          style={{ color: "var(--color-text-primary)" }}
-                        >
-                          Loading countries...
-                        </div>
-                      ) : countries.length > 0 ? (
-                        countries.map((country) => (
-                          <button
-                            key={country.code}
-                            type="button"
-                            onClick={() => {
-                              setFormData((prev) => ({
-                                ...prev,
-                                countryCode: country.code,
-                              }));
-                              setIsCountryDropdownOpen(false);
-                            }}
-                            className="w-full flex items-center gap-3 px-3 py-2 text-sm transition-colors duration-200 hover:bg-[var(--color-primary-50)]"
-                            style={{ color: "var(--color-text-primary)" }}
-                          >
-                            <span className="text-base">{country.flag}</span>
-                            <span className="text-xs min-w-[60px]">
-                              {country.code}
-                            </span>
-                            <span className="flex-1 text-left text-xs truncate">
-                              {country.country}
-                            </span>
-                          </button>
-                        ))
-                      ) : (
-                        <div
-                          className="px-3 py-4 text-sm text-center"
-                          style={{ color: "var(--color-text-primary)" }}
-                        >
-                          No countries available
-                        </div>
-                      )}
-                    </div>
-                  </>
-                )}
-              </div>
-
-              {/* Phone Input */}
+            <div className="w-full">
               <input
+                ref={phoneInputRef}
                 type="tel"
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="050 123 4567"
-                required
-                className="flex-1 h-11 px-4 rounded-lg border outline-none transition-all duration-300 focus:ring-2 focus:scale-[1.02] focus:shadow-md placeholder:text-[var(--why-choose-secondary)]/60"
+                className="w-full h-11 pl-[52px] pr-4 rounded-lg border outline-none transition-all duration-300 focus:ring-2 focus:scale-[1.02] focus:shadow-md placeholder:text-[var(--why-choose-secondary)]/60"
                 style={{
                   backgroundColor: "white",
-                  borderColor: "var(--color-primary-500)",
+                  borderColor:
+                    touched.phone && errors.phone
+                      ? "#ef4444"
+                      : "var(--color-primary-500)",
                   color: "var(--color-text-primary)",
                 }}
                 onFocus={(e) => {
@@ -324,25 +434,47 @@ const QuoteModal = ({ isOpen, onClose }) => {
                     "0 0 0 2px rgba(12, 120, 220, 0.2)";
                 }}
                 onBlur={(e) => {
-                  e.target.style.borderColor = "var(--color-primary-500)";
+                  handleBlur("phone")();
+                  e.target.style.borderColor =
+                    touched.phone && errors.phone
+                      ? "#ef4444"
+                      : "var(--color-primary-500)";
                   e.target.style.boxShadow = "none";
                 }}
               />
             </div>
+            {touched.phone && errors.phone && (
+              <p className="mt-1 text-xs text-red-500">{errors.phone}</p>
+            )}
           </div>
 
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full h-12 rounded-lg font-semibold text-white inline-flex items-center justify-center gap-2 transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 hover:shadow-lg group mt-6"
+            disabled={!isValid || isSubmitting}
+            className={`w-full h-12 rounded-lg font-semibold text-white inline-flex items-center justify-center gap-2 transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 hover:shadow-lg group mt-6 ${
+              isValid && !isSubmitting ? "" : "opacity-60 cursor-not-allowed"
+            }`}
             style={{
               background:
                 "linear-gradient(92deg, var(--color-primary-500) 1.65%, var(--color-action) 98%)",
             }}
           >
-            Get Free Quote
-            <Mail className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+            {isSubmitting ? "Submitting..." : "Get Free Quote"}
+            {!isSubmitting && (
+              <Mail className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+            )}
           </button>
+          {submitSuccess && (
+            <p className="mt-2 text-xs text-green-600 text-center">
+              Form submitted successfully!
+            </p>
+          )}
+          {submitError && (
+            <p className="mt-2 text-xs text-red-500 text-center">
+              {submitError}
+            </p>
+          )}
         </form>
       </div>
     </div>

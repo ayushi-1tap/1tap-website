@@ -1,12 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import {
   ArrowRight,
   Crown,
   LayoutDashboard,
   Building2,
   Zap,
-  ChevronDown,
 } from "lucide-react";
+import intlTelInput from "intl-tel-input";
+import { createLeadFromWebsite } from "../../utils/api";
 
 const features = [
   {
@@ -40,58 +41,241 @@ const features = [
 const Hero = () => {
   const [fullName, setFullName] = useState("");
   const [businessEmail, setBusinessEmail] = useState("");
-  const [countryCode, setCountryCode] = useState("+971");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
-  const [countries, setCountries] = useState([]);
-  const [isLoadingCountries, setIsLoadingCountries] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const phoneInputRef = useRef(null);
+  const itiRef = useRef(null);
+  const [touched, setTouched] = useState({
+    fullName: false,
+    businessEmail: false,
+    phoneNumber: false,
+  });
 
-  // Fetch countries from API
+  // Initialize intl-tel-input and detect user country
   useEffect(() => {
-    const fetchCountries = async () => {
+    if (!phoneInputRef.current) return;
+
+    // Detect user country
+    const detectCountry = async () => {
       try {
-        setIsLoadingCountries(true);
-        const response = await fetch(
-          "https://restcountries.com/v3.1/all?fields=name,cca2,flag,idd"
-        );
+        const response = await fetch("https://api.country.is");
         const data = await response.json();
-
-        // Map API data to our format
-        const mappedCountries = data
-          .filter((country) => country.idd?.root && country.idd?.suffixes?.[0])
-          .map((country) => ({
-            code: `${country.idd.root}${country.idd.suffixes[0]}`,
-            flag: country.flag,
-            country: country.name.common,
-            cca2: country.cca2,
-          }))
-          .sort((a, b) => a.country.localeCompare(b.country));
-
-        setCountries(mappedCountries);
-
-        // Set default to UAE if available
-        const uae = mappedCountries.find((c) => c.code === "+971");
-        if (uae) {
-          setCountryCode("+971");
-        }
+        const countryCode = data?.country || "AE"; // Fallback to AE
+        return countryCode.toLowerCase();
       } catch (error) {
-        console.error("Error fetching countries:", error);
-        // Fallback to a few common countries if API fails
-        setCountries([
-          { code: "+971", flag: "🇦🇪", country: "United Arab Emirates" },
-          { code: "+1", flag: "🇺🇸", country: "United States" },
-          { code: "+44", flag: "🇬🇧", country: "United Kingdom" },
-          { code: "+91", flag: "🇮🇳", country: "India" },
-        ]);
-      } finally {
-        setIsLoadingCountries(false);
+        console.error("Error detecting country:", error);
+        return "ae"; // Fallback to AE
       }
     };
 
-    fetchCountries();
+    const initIntlTelInput = async () => {
+      const defaultCountry = await detectCountry();
+
+      itiRef.current = intlTelInput(phoneInputRef.current, {
+        initialCountry: defaultCountry,
+        preferredCountries: ["ae", "us", "gb", "in"],
+        utilsScript:
+          "https://cdn.jsdelivr.net/npm/intl-tel-input@25.15.0/build/js/utils.js",
+      });
+
+      // Wait for utils to load before enabling strict validation
+      if (phoneInputRef.current) {
+        phoneInputRef.current.addEventListener("countrychange", () => {
+          // Force re-validation when country changes
+          if (phoneInputRef.current) {
+            phoneInputRef.current.dispatchEvent(new Event("input"));
+          }
+        });
+      }
+    };
+
+    initIntlTelInput();
+
+    return () => {
+      if (itiRef.current) {
+        itiRef.current.destroy();
+      }
+    };
   }, []);
 
-  const selectedCountry = countries.find((c) => c.code === countryCode);
+  // Validation logic
+  const errors = useMemo(() => {
+    const e = {};
+    if (!fullName.trim()) {
+      e.fullName = "Full Name is required.";
+    } else if (fullName.trim().length < 2) {
+      e.fullName = "Full Name must be at least 2 characters.";
+    } else if (!/^[a-zA-Z\s'-]+$/.test(fullName.trim())) {
+      e.fullName =
+        "Full Name should only contain letters, spaces, hyphens, and apostrophes.";
+    }
+
+    if (!businessEmail.trim()) {
+      e.businessEmail = "Business Email is required.";
+    } else if (!/^\S+@\S+\.\S+$/.test(businessEmail.trim())) {
+      e.businessEmail = "Please enter a valid email address.";
+    }
+
+    // Get the actual value from the input element for validation
+    const phoneInputValue = phoneInputRef.current?.value || phoneNumber;
+    if (!phoneInputValue || !phoneInputValue.trim()) {
+      e.phoneNumber = "Phone Number is required.";
+    } else if (itiRef.current) {
+      // Check if utils are loaded before using strict validation
+      const utilsLoaded = window.intlTelInputUtils !== undefined;
+      if (utilsLoaded) {
+        // Use strict validation only if utils are loaded
+        if (!itiRef.current.isValidNumber()) {
+          e.phoneNumber = "Please enter a valid phone number.";
+        }
+      } else {
+        // Fallback: check if there are enough digits (at least 7)
+        const digitsOnly = phoneInputValue.replace(/\D/g, "");
+        if (digitsOnly.length < 7) {
+          e.phoneNumber = "Phone Number must be at least 7 digits.";
+        }
+      }
+    } else {
+      // Fallback validation if intl-tel-input isn't initialized yet
+      const digitsOnly = phoneInputValue.trim().replace(/\D/g, "");
+      if (digitsOnly.length < 7) {
+        e.phoneNumber = "Phone Number must be at least 7 digits.";
+      }
+    }
+
+    return e;
+  }, [fullName, businessEmail, phoneNumber]);
+
+  const isValid = Object.keys(errors).length === 0;
+
+  // Helper function to parse full name
+  const parseFullName = (fullNameValue) => {
+    const parts = fullNameValue.trim().split(/\s+/).filter(Boolean);
+    let firstName = null,
+      middleName = null,
+      lastName = null;
+
+    switch (parts.length) {
+      case 0:
+        break;
+      case 1:
+        firstName = parts[0];
+        break;
+      case 2:
+        [firstName, lastName] = parts;
+        break;
+      case 3:
+        [firstName, middleName, lastName] = parts;
+        break;
+      default:
+        // 4 or more: first two → firstName, last two → lastName, drop any extra
+        firstName = parts.slice(0, 2).join(" ");
+        lastName = parts.slice(-2).join(" ");
+        break;
+    }
+
+    return {
+      firstName,
+      ...(middleName && { middleName }),
+      ...(lastName && { lastName }),
+    };
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setTouched({
+      fullName: true,
+      businessEmail: true,
+      phoneNumber: true,
+    });
+
+    if (!isValid) {
+      console.log("Form validation failed:", errors);
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+    setSubmitSuccess(false);
+
+    try {
+      const parsedName = parseFullName(fullName);
+
+      // Get phone number and country code separately from intl-tel-input
+      let phoneNumberValue = phoneNumber.trim();
+      let countryCode = "+971"; // Default to UAE
+
+      if (itiRef.current) {
+        // Get country data to extract dial code
+        const countryData = itiRef.current.getSelectedCountryData();
+        if (countryData && countryData.dialCode) {
+          countryCode = `+${countryData.dialCode}`;
+        }
+
+        // Get the full number in E.164 format and extract just the number part
+        const fullNumber = itiRef.current.getNumber();
+        if (fullNumber) {
+          // Remove the country code prefix to get just the number
+          const dialCode = countryData?.dialCode || "971";
+          phoneNumberValue = fullNumber
+            .replace(`+${dialCode}`, "")
+            .replace(/\D/g, "");
+        } else {
+          // Fallback: use the input value and remove any country code if present
+          phoneNumberValue = phoneNumber.replace(/\D/g, "");
+        }
+      } else {
+        // Fallback if intl-tel-input isn't initialized
+        phoneNumberValue = phoneNumber.replace(/\D/g, "");
+      }
+
+      const payload = {
+        ...parsedName,
+        email: businessEmail.trim(),
+        phone: phoneNumberValue,
+        countryCode: countryCode,
+        source: "Website",
+      };
+
+      console.log("Hero Form Submitted:", payload);
+
+      await createLeadFromWebsite(payload);
+
+      setSubmitSuccess(true);
+      console.log("Lead created successfully");
+
+      // Reset form immediately after successful submission
+      setFullName("");
+      setBusinessEmail("");
+      setPhoneNumber("");
+      setTouched({
+        fullName: false,
+        businessEmail: false,
+        phoneNumber: false,
+      });
+
+      // Reset intl-tel-input to default country
+      if (itiRef.current && phoneInputRef.current) {
+        itiRef.current.setCountry("ae"); // Reset to default country
+        phoneInputRef.current.value = "";
+      }
+
+      // Clear success message after 3 seconds
+      setTimeout(() => {
+        setSubmitSuccess(false);
+      }, 3000);
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      setSubmitError(
+        error.response?.data?.message ||
+          "Failed to submit form. Please try again."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <section className="w-full bg-[var(--color-bg-white)]">
@@ -209,144 +393,140 @@ const Hero = () => {
                   Start Your Business in the right Free Zone
                 </h3>
 
-                <div className="mt-5 space-y-4">
+                <form onSubmit={handleSubmit} className="mt-5 space-y-4">
                   <div>
                     <label className="block text-[var(--color-neutral-800)]/70 mb-2">
-                      Full name
+                      Full name <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
+                      onBlur={() =>
+                        setTouched((prev) => ({ ...prev, fullName: true }))
+                      }
                       placeholder="E.g. John Carter"
-                      className="h-10 w-full rounded-lg border border-[var(--color-primary-500)]
-                                 bg-white/75 px-3 text-sm text-[var(--color-text-primary)]
-                                 outline-none focus:ring-2 focus:ring-[var(--color-primary-600)]/20
-                                 focus:border-[var(--color-primary-600)] transition-all duration-300 ease-in-out
-                                 focus:scale-[1.02] focus:shadow-md"
+                      className={`h-10 w-full rounded-lg border px-3 text-sm text-[var(--color-text-primary)]
+                                 bg-white/75 outline-none transition-all duration-300 ease-in-out
+                                 focus:ring-2 focus:ring-[var(--color-primary-600)]/20
+                                 focus:border-[var(--color-primary-600)] focus:scale-[1.02] focus:shadow-md ${
+                                   touched.fullName && errors.fullName
+                                     ? "border-red-500 ring-1 ring-red-200"
+                                     : "border-[var(--color-primary-500)]"
+                                 }`}
                     />
+                    {touched.fullName && errors.fullName && (
+                      <p className="mt-1 text-xs text-red-500">
+                        {errors.fullName}
+                      </p>
+                    )}
                   </div>
 
                   <div>
                     <label className="block text-[var(--color-neutral-800)]/70 mb-2">
-                      Business Email
+                      Business Email <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="email"
                       value={businessEmail}
                       onChange={(e) => setBusinessEmail(e.target.value)}
+                      onBlur={() =>
+                        setTouched((prev) => ({ ...prev, businessEmail: true }))
+                      }
                       placeholder="E.g. john@company.com"
-                      className="h-10 w-full rounded-lg border border-[var(--color-primary-500)]
-                                 bg-white/75 px-3 text-sm text-[var(--color-text-primary)]
-                                 outline-none focus:ring-2 focus:ring-[var(--color-primary-600)]/20
-                                 focus:border-[var(--color-primary-600)] transition-all duration-300 ease-in-out
-                                 focus:scale-[1.02] focus:shadow-md"
+                      className={`h-10 w-full rounded-lg border px-3 text-sm text-[var(--color-text-primary)]
+                                 bg-white/75 outline-none transition-all duration-300 ease-in-out
+                                 focus:ring-2 focus:ring-[var(--color-primary-600)]/20
+                                 focus:border-[var(--color-primary-600)] focus:scale-[1.02] focus:shadow-md ${
+                                   touched.businessEmail && errors.businessEmail
+                                     ? "border-red-500 ring-1 ring-red-200"
+                                     : "border-[var(--color-primary-500)]"
+                                 }`}
                     />
+                    {touched.businessEmail && errors.businessEmail && (
+                      <p className="mt-1 text-xs text-red-500">
+                        {errors.businessEmail}
+                      </p>
+                    )}
                   </div>
 
                   <div>
                     <label className="block text-[var(--color-neutral-800)]/70 mb-2">
-                      Phone number
+                      Phone number <span className="text-red-500">*</span>
                     </label>
-                    <div className="flex gap-2">
-                      {/* Country Code Dropdown */}
-                      <div className="relative z-50">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setIsCountryDropdownOpen(!isCountryDropdownOpen)
-                          }
-                          disabled={isLoadingCountries}
-                          className="h-10 min-w-[100px] flex items-center gap-2 rounded-lg border border-[var(--color-primary-500)]
-                                     bg-white/75 px-3 text-sm text-[var(--color-text-primary)]
-                                     outline-none focus:ring-2 focus:ring-[var(--color-primary-600)]/20
-                                     focus:border-[var(--color-primary-600)] transition-all duration-300 ease-in-out
-                                     hover:scale-[1.02] hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          <span className="text-base">
-                            {selectedCountry?.flag || "🌍"}
-                          </span>
-                          <span className="text-xs">
-                            {selectedCountry?.code || countryCode}
-                          </span>
-                          <ChevronDown className="h-3 w-3 ml-auto" />
-                        </button>
-
-                        {isCountryDropdownOpen && (
-                          <>
-                            <div
-                              className="fixed inset-0 z-[40]"
-                              onClick={() => setIsCountryDropdownOpen(false)}
-                            />
-                            <div
-                              className="absolute top-full left-0 mt-1 z-[50] w-64 rounded-lg border border-[var(--color-primary-500)]
-                                          bg-white shadow-lg max-h-40 overflow-y-auto"
-                            >
-                              {isLoadingCountries ? (
-                                <div className="px-3 py-4 text-sm text-[var(--color-text-primary)]/60 text-center">
-                                  Loading countries...
-                                </div>
-                              ) : countries.length > 0 ? (
-                                countries.map((country) => (
-                                  <button
-                                    key={country.code}
-                                    type="button"
-                                    onClick={() => {
-                                      setCountryCode(country.code);
-                                      setIsCountryDropdownOpen(false);
-                                    }}
-                                    className="w-full flex items-center gap-3 px-3 py-2 text-sm text-[var(--color-text-primary)]
-                                               hover:bg-[var(--color-primary-50)] transition-colors duration-200"
-                                  >
-                                    <span className="text-base">
-                                      {country.flag}
-                                    </span>
-                                    <span className="text-xs min-w-[60px]">
-                                      {country.code}
-                                    </span>
-                                    <span className="flex-1 text-left text-xs truncate">
-                                      {country.country}
-                                    </span>
-                                  </button>
-                                ))
-                              ) : (
-                                <div className="px-3 py-4 text-sm text-[var(--color-text-primary)]/60 text-center">
-                                  No countries available
-                                </div>
-                              )}
-                            </div>
-                          </>
-                        )}
-                      </div>
-
-                      {/* Phone Number Input */}
+                    <div className="w-full">
                       <input
+                        ref={phoneInputRef}
                         type="tel"
                         value={phoneNumber}
-                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        onChange={(e) => {
+                          // Filter out alphabets - only allow numbers, spaces, hyphens, parentheses, and plus
+                          const filteredValue = e.target.value.replace(
+                            /[^0-9\s\-()+]/g,
+                            ""
+                          );
+                          setPhoneNumber(filteredValue);
+                        }}
+                        onBlur={() => {
+                          setTouched((prev) => ({
+                            ...prev,
+                            phoneNumber: true,
+                          }));
+                          // Sync state with intl-tel-input's formatted value
+                          if (phoneInputRef.current && itiRef.current) {
+                            const formattedValue = phoneInputRef.current.value;
+                            setPhoneNumber(formattedValue);
+                          }
+                        }}
                         placeholder="081234 56789"
-                        className="h-10 flex-1 rounded-lg border border-[var(--color-primary-500)]
-                                   bg-white/75 px-3 text-sm text-[var(--color-text-primary)]
-                                   outline-none focus:ring-2 focus:ring-[var(--color-primary-600)]/20
-                                   focus:border-[var(--color-primary-600)] transition-all duration-300 ease-in-out
-                                   focus:scale-[1.02] focus:shadow-md"
+                        className={`h-10 w-full rounded-lg border pl-[52px] pr-3 text-sm text-[var(--color-text-primary)]
+                                   bg-white/75 outline-none transition-all duration-300 ease-in-out
+                                   focus:ring-2 focus:ring-[var(--color-primary-600)]/20
+                                   focus:border-[var(--color-primary-600)] focus:scale-[1.02] focus:shadow-md ${
+                                     touched.phoneNumber && errors.phoneNumber
+                                       ? "border-red-500 ring-1 ring-red-200"
+                                       : "border-[var(--color-primary-500)]"
+                                   }`}
                       />
                     </div>
+                    {touched.phoneNumber && errors.phoneNumber && (
+                      <p className="mt-1 text-xs text-red-500">
+                        {errors.phoneNumber}
+                      </p>
+                    )}
                   </div>
 
                   <button
-                    className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl
+                    type="submit"
+                    disabled={!isValid || isSubmitting}
+                    className={`mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl
                                 px-4 py-3 text-sm font-medium
-                                text-[var(--color-text-reverse)] hover:bg-[var(--color-primary-700)] transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 hover:shadow-lg group"
+                                text-[var(--color-text-reverse)] transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 hover:shadow-lg group ${
+                                  isValid && !isSubmitting
+                                    ? "hover:bg-[var(--color-primary-700)]"
+                                    : "opacity-60 cursor-not-allowed"
+                                }`}
                     style={{
                       background:
                         "linear-gradient(92deg, var(--color-primary-500) 1.65%, var(--color-action) 98%)",
                     }}
                   >
-                    Start my Company{" "}
-                    <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                    {isSubmitting ? "Submitting..." : "Start my Company"}{" "}
+                    {!isSubmitting && (
+                      <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                    )}
                   </button>
-                </div>
+                  {submitSuccess && (
+                    <p className="mt-2 text-xs text-green-600 text-center">
+                      Form submitted successfully!
+                    </p>
+                  )}
+                  {submitError && (
+                    <p className="mt-2 text-xs text-red-500 text-center">
+                      {submitError}
+                    </p>
+                  )}
+                </form>
               </div>
             </div>
           </div>

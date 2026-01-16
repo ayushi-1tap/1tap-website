@@ -4,7 +4,6 @@ import {
   Calendar,
   Mail,
   Facebook,
-  Twitter,
   Linkedin,
   Instagram,
   Star,
@@ -13,40 +12,64 @@ import FooterLogo from "../assets/FooterLogo.svg";
 
 const Footer = () => {
   const solutions = [
-    "Incorporation Basic Package",
-    "Founder's Starter Package",
-    "Freelancer Package",
-    "Strategic Success Package",
-    "Investor Essentials Package",
-    "Business Compliance Package",
-    "Premium Elite Package",
+    {
+      label: "Incorporation Basic Package",
+      href: "https://1tapbiz.com/incorporation-package/",
+    },
+    { label: "Founder's Starter Package", href: "https://1tapbiz.com/founders-package/" },
+    {
+      label: "Strategic Success Package",
+      href: "https://1tapbiz.com/strategic-success-package/",
+    },
+    {
+      label: "Business Essentials Package",
+      href: "https://1tapbiz.com/business-essentials-package/",
+    },
+    {
+      label: "Business Compliance Package",
+      href: "https://1tapbiz.com/business-compliance-package/",
+    },
+    {
+      label: "Business Elite Package",
+      href: "https://1tapbiz.com/business-elite-package/",
+    },
   ];
 
   const resources = [
-    "Newsletter Signup",
-    "Accounting & Tax",
-    "Company Formation",
-    "Free Zone",
-    "Free Zone (Mainland)",
-    "FAQs",
-    "FREEZONE - 60 MIN SETUP",
+    { label: "Jurisdiction Guide", href: "https://1tapbiz.com/free-zones/" },
+    { label: "Accounting & Tax", href: "https://1tapbiz.com/accounting-tax/" },
+    { label: "Company Formation", href: "https://1tapbiz.com/company-formation/" },
+    { label: "Free Zones", href: "https://1tapbiz.com/free-zones/" },
+    { label: "FAQs", href: "https://1tapbiz.com/faqs/" },
+    { label: "FAWRI - 60 MIN SETUP", href: "https://1tapbiz.com/fawri/" },
   ];
 
   const company = [
-    "About Us",
-    "Contact Us",
-    "Careers",
-    "Blog",
-    "Privacy Policy",
-    "Refund Policy",
-    "Terms & Conditions",
+    { label: "About Us", href: "/about" },
+    { label: "Contact Us", href: "/contact-us" },
+    { label: "Careers", href: "https://1tapbiz.com/careers/" },
+    { label: "Blog", href: "https://1tapbiz.com/our-blog/" },
+    { label: "Privacy Policy", href: "https://1tapbiz.com/privacy-policy/" },
+    { label: "Refund Policy", href: "https://1tapbiz.com/refund-policy/" },
+    { label: "Terms & Conditions", href: "https://1tapbiz.com/terms-conditions/" },
   ];
 
   const socialLinks = [
-    { name: "Facebook", icon: Facebook, href: "#" },
-    { name: "Twitter", icon: Twitter, href: "#" },
-    { name: "LinkedIn", icon: Linkedin, href: "#" },
-    { name: "Instagram", icon: Instagram, href: "#" },
+    {
+      name: "Facebook",
+      icon: Facebook,
+      href: "https://www.facebook.com/people/1TAP/61572038638080/",
+    },
+    {
+      name: "LinkedIn",
+      icon: Linkedin,
+      href: "https://www.linkedin.com/company/1tapsolutions/",
+    },
+    {
+      name: "Instagram",
+      icon: Instagram,
+      href: "https://www.instagram.com/1tapbiz?igsh=MTYwemltY3B1aHZpYQ%3D%3D",
+    },
   ];
 
   return (
@@ -59,18 +82,14 @@ const Footer = () => {
             {/* Brand + description + socials */}
             <div className="md:col-span-1">
               <div className="flex items-center gap-3">
-                <img
-                  src={FooterLogo}
-                  alt="1TAP"
-                  className="w-auto h-9 md:h-8"
-                />
+                <img src={FooterLogo} alt="1TAP" className="w-auto h-9 md:h-8" />
               </div>
 
               <p className="mt-4 md:mt-5 text-sm md:text-base leading-6 text-white/70 max-w-sm">
-                1TAP simplifies your company setup in UAE, letting you manage
-                the entire process with just a few clicks using innovative
-                instant setup. Launch your global business effortlessly and with
-                zero hassle.
+                1TAP simplifies your company setup in UAE, letting you manage the
+                entire process with just a few clicks using innovative instant
+                setup. Launch your global business effortlessly and with zero
+                hassle.
               </p>
 
               <div className="mt-5 md:mt-6 flex items-center gap-2 sm:gap-3">
@@ -80,6 +99,8 @@ const Footer = () => {
                     <a
                       key={s.name}
                       href={s.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       aria-label={s.name}
                       className="h-9 w-9 rounded-lg bg-white/10 hover:bg-white/15 transition-colors flex items-center justify-center"
                     >
@@ -92,17 +113,19 @@ const Footer = () => {
 
             {/* Solutions */}
             <div>
-              <p className=" font-semibold tracking-widest text-white/80">
+              <p className="font-semibold tracking-widest text-white/80">
                 SOLUTIONS
               </p>
               <ul className="mt-3 md:mt-4 space-y-2 md:space-y-3">
                 {solutions.map((item) => (
-                  <li key={item}>
+                  <li key={item.label}>
                     <a
-                      href="#"
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="text-sm md:text-base text-white/65 hover:text-white transition-colors"
                     >
-                      {item}
+                      {item.label}
                     </a>
                   </li>
                 ))}
@@ -111,17 +134,19 @@ const Footer = () => {
 
             {/* Resources */}
             <div>
-              <p className=" font-semibold tracking-widest text-white/80">
+              <p className="font-semibold tracking-widest text-white/80">
                 RESOURCES
               </p>
               <ul className="mt-3 md:mt-4 space-y-2 md:space-y-3">
                 {resources.map((item) => (
-                  <li key={item}>
+                  <li key={item.label}>
                     <a
-                      href="#"
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="text-sm md:text-base text-white/65 hover:text-white transition-colors"
                     >
-                      {item}
+                      {item.label}
                     </a>
                   </li>
                 ))}
@@ -130,18 +155,20 @@ const Footer = () => {
 
             {/* Company + buttons + rating */}
             <div className="flex flex-col">
-              <p className=" font-semibold tracking-widest text-white/80">
+              <p className="font-semibold tracking-widest text-white/80">
                 COMPANY
               </p>
 
               <ul className="mt-3 md:mt-4 space-y-2 md:space-y-3">
                 {company.map((item) => (
-                  <li key={item}>
+                  <li key={item.label}>
                     <a
-                      href="#"
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="text-sm md:text-base text-white/65 hover:text-white transition-colors"
                     >
-                      {item}
+                      {item.label}
                     </a>
                   </li>
                 ))}
@@ -149,7 +176,12 @@ const Footer = () => {
 
               {/* Buttons */}
               <div className="mt-6 md:mt-8 space-y-2 md:space-y-3 max-w-full sm:max-w-[240px] w-full">
-                <a href="https://api.whatsapp.com/send/?phone=971503586038" target="_blank" rel="noopener noreferrer" className="w-full h-10 rounded-[8px] bg-[var(--footer-btn-chat)] hover:opacity-95 transition-opacity flex items-center justify-center gap-2 text-white text-[14px] font-medium">
+                <a
+                  href="https://api.whatsapp.com/send/?phone=971503586038"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full h-10 rounded-[8px] bg-[var(--footer-btn-chat)] hover:opacity-95 transition-opacity flex items-center justify-center gap-2 text-white text-[14px] font-medium"
+                >
                   <MessageCircle className="h-4 w-4" />
                   Chat Now
                 </a>
@@ -159,7 +191,12 @@ const Footer = () => {
                   Schedule a Meet
                 </button>
 
-                <a href="mailto:hello@1tapbiz.com" target="_blank" rel="noopener noreferrer" className="w-full h-10 rounded-[8px] bg-[var(--footer-btn-email)] hover:opacity-95 transition-opacity flex items-center justify-center gap-2 text-[#1f2329] text-[14px] font-semibold">
+                <a
+                  href="mailto:hello@1tapbiz.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full h-10 rounded-[8px] bg-[var(--footer-btn-email)] hover:opacity-95 transition-opacity flex items-center justify-center gap-2 text-[#1f2329] text-[14px] font-semibold"
+                >
                   <Mail className="h-4 w-4" />
                   Email Us
                 </a>
