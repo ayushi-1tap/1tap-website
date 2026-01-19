@@ -305,11 +305,11 @@ const Hero = () => {
             <div className="w-full md:max-w-[50%]">
               {/* trust pill */}
               <div className="inline-flex items-center gap-2 rounded-full border border-[var(--color-blue-100)] bg-white/70 px-3 py-2 text-xs md:py-2.5 md:text-sm text-[var(--color-text-primary)] backdrop-blur">
-                <span className="flex -space-x-2">
+                {/* <span className="flex -space-x-2">
                   <span className="h-4 w-4 md:h-5 md:w-5 rounded-full bg-[var(--color-blue-100)] border border-white" />
                   <span className="h-4 w-4 md:h-5 md:w-5 rounded-full bg-[var(--color-primary-100)] border border-white" />
                   <span className="h-4 w-4 md:h-5 md:w-5 rounded-full bg-[var(--color-primary-50)] border border-white" />
-                </span>
+                </span> */}
                 <span className="whitespace-nowrap">
                   Trusted by founders all around the world
                 </span>
