@@ -1,15 +1,19 @@
 /* eslint-disable react/prop-types */
 import { Check, Plus } from "lucide-react";
 import { ArrowRight } from "lucide-react";
+import { useCurrency } from "../../contexts/CurrencyContext";
 
 const ExistingBusinessPricing = ({ onViewAddOn }) => {
+  const { formatPrice } = useCurrency();
+
   const packages = [
     {
       badge: "OPERATIONAL SUPPORT",
       title: "Business Essentials",
       description:
         "All-inclusive services for ongoing compliance and license renewal.",
-      price: "USD 2,241",
+      priceKey: "business-essentials",
+      priceAmount: 2241,
       features: [
         "License Renewal",
         "VAT Registration & Returns",
@@ -21,7 +25,8 @@ const ExistingBusinessPricing = ({ onViewAddOn }) => {
       badge: "CORE SERVICES FOR EVERY BUSINESS",
       title: "Business Compliance",
       description: "Streamlined compliance, accounting, and payroll support.",
-      price: "USD 4,708",
+      priceKey: "business-compliance",
+      priceAmount: 4708,
       isRecommended: true,
       features: [
         {
@@ -37,7 +42,8 @@ const ExistingBusinessPricing = ({ onViewAddOn }) => {
       badge: "FULL SERVICE SUITE",
       title: "Business Elite",
       description: "Premium, end-to-end compliance, accounting, and payroll.",
-      price: "USD 8,610",
+      priceKey: "business-elite",
+      priceAmount: 8610,
       features: [
         {
           type: "heading",
@@ -98,7 +104,7 @@ const ExistingBusinessPricing = ({ onViewAddOn }) => {
                 {/* Price */}
                 <div className="mt-6">
                   <div className="text-3xl font-extrabold text-[#0B1B3A]">
-                    {pkg.price}
+                    {formatPrice(pkg.priceAmount)}
                   </div>
                   <div className="mt-2 text-sm font-semibold text-[var(--color-primary-600)]">
                     Annual
@@ -205,7 +211,7 @@ const ExistingBusinessPricing = ({ onViewAddOn }) => {
                 className={` ${index == 0 ? "mt-9 3xl:mt-3 " : "mt-6 md:mt-8"}`}
               >
                 <div className="mt-6 md:mt-10 text-3xl md:text-4xl font-extrabold text-[#0B1B3A]">
-                  {pkg.price}
+                  {formatPrice(pkg.priceAmount)}
                 </div>
                 <div className="mt-2 text-sm md:text-base font-semibold text-[var(--color-primary-600)]">
                   Annual

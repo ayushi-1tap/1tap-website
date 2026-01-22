@@ -10,8 +10,10 @@ import {
   UserPlus,
 } from "lucide-react";
 import DropDownSelect from "./DropDownSelect";
+import { useCurrency } from "../../contexts/CurrencyContext";
 
 const AddOnServices = () => {
+  const { formatPrice } = useCurrency();
   const [activeCategory, setActiveCategory] = useState("all");
   const [selectedOptions, setSelectedOptions] = useState({});
 
@@ -33,7 +35,8 @@ const AddOnServices = () => {
       title: "Visa for Employee",
       description:
         "Complete visa processing service for company employees including paperwork and approvals.",
-      price: "USD 1,000 / employee",
+      priceAmount: 1000,
+      priceSuffix: "/ employee",
     },
     {
       id: 2,
@@ -44,7 +47,8 @@ const AddOnServices = () => {
       title: "Visa for Shareholder",
       description:
         "Facilitate visa issuance for shareholders including documentation and government liaison.",
-      price: "USD 1,500 / shareholder",
+      priceAmount: 1500,
+      priceSuffix: "/ shareholder",
     },
     {
       id: 3,
@@ -55,7 +59,8 @@ const AddOnServices = () => {
       title: "Tax Consultancy",
       description:
         "Expert tax planning and advisory services to reduce liabilities and stay compliant.",
-      price: "USD 299 / hour",
+      priceAmount: 299,
+      priceSuffix: "/ hour",
     },
     {
       id: 4,
@@ -66,7 +71,8 @@ const AddOnServices = () => {
       title: "VAT Consultancy",
       description:
         "Expert VAT advice and filing support for businesses to stay compliant with UAE regulations.",
-      price: "USD 299 / hour",
+      priceAmount: 299,
+      priceSuffix: "/ hour",
     },
     {
       id: 5,
@@ -81,13 +87,13 @@ const AddOnServices = () => {
           label: "Annual accounting with MIS",
           description:
             "Annual bookkeeping and MIS reports to help track business performance and compliance.",
-          price: "USD 2,050",
+          priceAmount: 2050,
         },
         {
           label: "Monthly accounting with MIS",
           description:
             "Monthly bookkeeping and MIS reports to help track business performance and compliance.",
-          price: "USD 5,900",
+          priceAmount: 5900,
         },
       ],
     },
@@ -104,13 +110,13 @@ const AddOnServices = () => {
           label: "Turnover up to AED 150 Million",
           description:
             "Annual VAT filing service for businesses with turnover up to AED 150 Million.",
-          price: "USD 4,999",
+          priceAmount: 4999,
         },
         {
           label: "Any Turnover",
           description:
             "Annual VAT filing service for businesses with any turnover amount.",
-          price: "USD 4,999",
+          priceAmount: 4999,
         },
       ],
     },
@@ -123,7 +129,8 @@ const AddOnServices = () => {
       title: "Payroll and WPS",
       description:
         "Manage staff payroll with full WPS compliance and timely salary disbursement services.",
-      price: "USD 99 / employee",
+      priceAmount: 99,
+      priceSuffix: "/ employee",
     },
     {
       id: 8,
@@ -140,19 +147,19 @@ const AddOnServices = () => {
           label: "Digital",
           description:
             "Assistance with opening and managing digital business bank accounts efficiently.",
-          price: "USD 349",
+          priceAmount: 349,
         },
         {
           label: "Physical",
           description:
             "Assistance with opening and managing physical business bank accounts efficiently.",
-          price: "USD 999",
+          priceAmount: 999,
         },
         {
           label: "Digital + Physical",
           description:
             "Assistance with opening and managing both digital and physical business bank accounts efficiently.",
-          price: "USD 1,299",
+          priceAmount: 1299,
         },
       ],
     },
@@ -205,9 +212,12 @@ const AddOnServices = () => {
           const displayDescription = currentOption
             ? currentOption.description
             : service.description;
-          const displayPrice = currentOption
-            ? currentOption.price
-            : service.price;
+          const displayPriceAmount = currentOption
+            ? currentOption.priceAmount
+            : service.priceAmount;
+          const displayPriceSuffix = currentOption
+            ? currentOption.priceSuffix || ""
+            : service.priceSuffix || "";
 
           return (
             <div
@@ -286,7 +296,7 @@ const AddOnServices = () => {
 
               {/* Price */}
               <div className="text-lg sm:text-xl font-medium text-[var(--color-primary-600)] mt-3 sm:mt-4">
-                {displayPrice}
+                {formatPrice(displayPriceAmount, { suffix: displayPriceSuffix })}
               </div>
             </div>
           );

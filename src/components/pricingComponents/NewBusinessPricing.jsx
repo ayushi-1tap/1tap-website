@@ -1,16 +1,21 @@
 /* eslint-disable react/prop-types */
 import { Check, Plus } from "lucide-react";
 import { ArrowRight } from "lucide-react";
+import { useCurrency } from "../../contexts/CurrencyContext";
 
 const NewBusinessPricing = ({ onViewAddOn }) => {
+  const { formatPrice } = useCurrency();
+
   const packages = [
     {
       badge: "GREAT FOR STARTERS",
       title: "Incorporation Basic",
       description:
         "Effortless business setup with our all-inclusive incorporation services.",
-      originalPrice: "USD 897",
-      price: "USD 1",
+      originalPriceKey: "incorporation-basic",
+      priceKey: "incorporation-basic",
+      originalPriceAmount: 897,
+      priceAmount: 1,
       features: [
         "Business Setup",
         "Corporate Tax Registration",
@@ -25,7 +30,8 @@ const NewBusinessPricing = ({ onViewAddOn }) => {
       title: "Founder's Starter",
       description:
         "Kickstart your business with hassle-free company registration, streamlined compliance, and support.",
-      price: "USD 4,708",
+      priceKey: "founders-starter",
+      priceAmount: 4708,
       isRecommended: true,
       features: [
         {
@@ -45,7 +51,8 @@ const NewBusinessPricing = ({ onViewAddOn }) => {
       title: "Strategic Success",
       description:
         "Premium business support with company setup, end-to-end compliance, accounting, and payroll.",
-      price: "USD 8,610",
+      priceKey: "strategic-success",
+      priceAmount: 8610,
       features: [
         {
           type: "heading",
@@ -106,18 +113,18 @@ const NewBusinessPricing = ({ onViewAddOn }) => {
 
                 {/* Price */}
                 <div className="mt-6">
-                  {pkg.originalPrice ? (
+                  {pkg.originalPriceAmount ? (
                     <div>
                       <div className="text-xl font-semibold text-[rgba(15,23,42,0.55)] line-through">
-                        {pkg.originalPrice}
+                        {formatPrice(pkg.originalPriceAmount)}
                       </div>
                       <div className="text-3xl font-extrabold text-[#0B1B3A] mt-1.5">
-                        {pkg.price}
+                        {formatPrice(pkg.priceAmount)}
                       </div>
                     </div>
                   ) : (
                     <div className="text-3xl font-extrabold text-[#0B1B3A]">
-                      {pkg.price}
+                      {formatPrice(pkg.priceAmount)}
                     </div>
                   )}
                   <div className="mt-2 text-sm font-semibold text-[var(--color-primary-600)]">
@@ -226,18 +233,18 @@ const NewBusinessPricing = ({ onViewAddOn }) => {
                   index == 0 ? "mt-20 3xl:mt-8 " : "mt-6 md:mt-8"
                 }`}
               >
-                {pkg.originalPrice ? (
+                {pkg.originalPriceAmount ? (
                   <div>
                     <div className="text-xl md:text-2xl font-semibold text-[rgba(15,23,42,0.55)] line-through">
-                      {pkg.originalPrice}
+                      {formatPrice(pkg.originalPriceAmount)}
                     </div>
                     <div className="text-3xl md:text-4xl font-extrabold text-[#0B1B3A] mt-1.5">
-                      {pkg.price}
+                      {formatPrice(pkg.priceAmount)}
                     </div>
                   </div>
                 ) : (
                   <div className="mt-6 md:mt-10 text-3xl md:text-4xl font-extrabold text-[#0B1B3A]">
-                    {pkg.price}
+                    {formatPrice(pkg.priceAmount)}
                   </div>
                 )}
                 <div className="mt-2 text-sm font-semibold text-[var(--color-primary-600)]">

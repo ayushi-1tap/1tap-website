@@ -3,19 +3,19 @@ import { Building2, Briefcase, Plus } from "lucide-react";
 import NewBusinessPricing from "./NewBusinessPricing";
 import ExistingBusinessPricing from "./ExistingBusinessPricing";
 import AddOnServices from "./AddOnServices";
-import { motion, useInView } from "framer-motion";
+import CurrencyDropdown from "./CurrencyDropdown";
+import { useInView } from "framer-motion";
 
 const PricingSection = () => {
   const [activeTab, setActiveTab] = useState("new");
   const sectionRef = useRef(null);
   const headingRef = useRef(null);
   const isInView = useInView(headingRef, { once: true, margin: "-50px" });
-  const [typingProgress, setTypingProgress] = useState(0);
 
   const tabs = [
-    { id: "new", label: "New Business Packages", icon: Briefcase },
-    { id: "existing", label: "Existing Business Packages", icon: Building2 },
-    { id: "addon", label: "Add-On Packages", icon: Plus },
+    { id: "new", label: "New Business Packages", mobileLabel: "New Business", icon: Briefcase },
+    { id: "existing", label: "Existing Business Packages", mobileLabel: "Existing Business", icon: Building2 },
+    { id: "addon", label: "Add-On Packages", mobileLabel: "Add-On Services", icon: Plus },
   ];
 
   const handleViewAddOn = () => {
@@ -31,28 +31,9 @@ const PricingSection = () => {
     }, 100);
   };
 
+  // Animation effect can be added here if needed in the future
   useEffect(() => {
-    if (isInView) {
-      setTypingProgress(0);
-      const text = "Flexible";
-      const duration = 1500; // 1.5 seconds
-      const interval = duration / text.length;
-      let currentIndex = 0;
-
-      const timer = setInterval(() => {
-        currentIndex++;
-        setTypingProgress((currentIndex / text.length) * 100);
-        
-        if (currentIndex >= text.length) {
-          clearInterval(timer);
-          setTypingProgress(100);
-        }
-      }, interval);
-
-      return () => clearInterval(timer);
-    } else {
-      setTypingProgress(0);
-    }
+    // Placeholder for future animations
   }, [isInView]);
 
   return (
@@ -74,6 +55,10 @@ const PricingSection = () => {
             From launching your first venture to scaling an established
             enterprise.
           </p>
+          {/* Currency Dropdown */}
+          <div className="flex justify-center mt-6">
+            <CurrencyDropdown />
+          </div>
         </div>
 
         {/* Tab Navigation (segmented pill) */}
@@ -98,7 +83,10 @@ const PricingSection = () => {
                       isActive ? "scale-110" : ""
                     }`}
                   />
-                  <span className="text-xs md:text-base ">{tab.label}</span>
+                  <span className="text-xs md:text-base">
+                    <span className="md:hidden">{tab.mobileLabel}</span>
+                    <span className="hidden md:inline">{tab.label}</span>
+                  </span>
                 </button>
               );
             })}
