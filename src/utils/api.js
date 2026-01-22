@@ -12,11 +12,7 @@ const axiosInstance = axios.create({
   },
 });
 
-/**
- * Create lead from website form submission
- * @param {Object} payload - Form data with firstName, middleName (optional), lastName (optional), email, phone
- * @returns {Promise} Axios response
- */
+
 export const createLeadFromWebsite = async (payload) => {
   console.log(payload, "123456764567");
 
