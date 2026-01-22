@@ -4,6 +4,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Smooth scrolling for the entire page */
+html {
+  scroll-behavior: smooth;
+}
+
+* {
+  scroll-behavior: smooth;
+}
+
 :root {
   /* Primary Colors - Azure/Blue */
   --color-primary-50: #dcedfd;

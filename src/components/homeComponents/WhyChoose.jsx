@@ -10,65 +10,134 @@ import {
   Globe,
   Check,
 } from "lucide-react";
+import { motion } from "framer-motion";
+import { useInView } from "framer-motion";
+import { useRef, useEffect, useState } from "react";
 
 const WhyChoose = () => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: false, margin: "-200px" });
+  const [animationKey, setAnimationKey] = useState(0);
+
+  useEffect(() => {
+    if (isInView) {
+      setAnimationKey(prev => prev + 1);
+    }
+  }, [isInView]);
+
+  // const features = [
+  //   {
+  //     feature: "Pricing Transparency",
+  //     traditional: "Hidden Fees & Surcharges Common",
+  //     tapbiz: "Transparent, All-Inclusive Fixed Pricing",
+  //     icon: DollarSign,
+  //   },
+  //   {
+  //     feature: "Average Setup Speed",
+  //     traditional: "Manual Processing (7-14 Days)",
+  //     tapbiz: "Fully Automated & 24-Hour Setup",
+  //     icon: Zap,
+  //   },
+  //   {
+  //     feature: "Management Dashboard",
+  //     traditional: "Paperwork, Emails & WhatsApp",
+  //     tapbiz: "All-in-One Digital Portal (AIO)",
+  //     icon: LayoutDashboard,
+  //   },
+  //   {
+  //     feature: "Business Banking Integration",
+  //     traditional: "Self-application (3-6 Weeks Wait)",
+  //     tapbiz: "Guaranteed Bank Pre-Approval",
+  //     icon: CreditCard,
+  //   },
+  //   {
+  //     feature: "Client Service Model",
+  //     traditional: "Shared Call Center Agents",
+  //     tapbiz: "Dedicated Manager & AI Support",
+  //     icon: Users,
+  //   },
+  //   {
+  //     feature: "Physical Presence Requirement",
+  //     traditional: "Often Required for Visa/Bank",
+  //     tapbiz: "100% Remote Setup Available",
+  //     icon: Globe,
+  //   },
+  // ];
   const features = [
     {
       feature: "Pricing Transparency",
-      traditional: "Hidden Fees & Surcharges Common",
-      tapbiz: "Transparent, All-Inclusive Fixed Pricing",
+      shuraa: "Package-based pricing, add-ons may apply",
+      setmybiz: "Pricing varies by service & jurisdiction",
+      tapbiz: "All-inclusive, transparent fixed pricing",
       icon: DollarSign,
     },
     {
-      feature: "Average Setup Speed",
-      traditional: "Manual Processing (7-14 Days)",
-      tapbiz: "Fully Automated & 24-Hour Setup",
+      feature: "Setup Speed",
+      shuraa: "Days to weeks (process dependent)",
+      setmybiz: "Timeline varies by service",
+      tapbiz: "Automated setup in as little as 24 hours",
       icon: Zap,
     },
     {
       feature: "Management Dashboard",
-      traditional: "Paperwork, Emails & WhatsApp",
-      tapbiz: "All-in-One Digital Portal (AIO)",
+      shuraa: "Service-led, no unified dashboard",
+      setmybiz: "Limited digital tracking",
+      tapbiz: "All-in-one digital dashboard (AIO)",
       icon: LayoutDashboard,
     },
     {
-      feature: "Business Banking Integration",
-      traditional: "Self-application (3-6 Weeks Wait)",
-      tapbiz: "Guaranteed Bank Pre-Approval",
+      feature: "Business Banking Support",
+      shuraa: "Bank assistance & introductions",
+      setmybiz: "Advisory support only",
+      tapbiz: "Guided bank pre-approval support",
       icon: CreditCard,
     },
     {
-      feature: "Client Service Model",
-      traditional: "Shared Call Center Agents",
-      tapbiz: "Dedicated Manager & AI Support",
+      feature: "Support Model",
+      shuraa: "Shared consultants / PRO teams",
+      setmybiz: "Shared advisory support",
+      tapbiz: "Dedicated manager + AI support",
       icon: Users,
     },
     {
       feature: "Physical Presence Requirement",
-      traditional: "Often Required for Visa/Bank",
-      tapbiz: "100% Remote Setup Available",
+      shuraa: "Often required for visa/banking",
+      setmybiz: "Depends on service & partner",
+      tapbiz: "100% remote setup available",
       icon: Globe,
     },
   ];
-
+  
   return (
-    <section
-      className="w-full py-8"
+    <motion.section
+      ref={ref}
+      className="w-full 3xl:py-6 lg:py-2 py-6"
       style={{
         background:
           "radial-gradient(120% 70% at 50% 0%, #FFFFFF 0%, #FFFFFF 55%, rgba(220, 237, 253, 0.55) 100%)",
       }}
+      initial={{ opacity: 0 }}
+      animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+      transition={{ duration: 0.8 }}
     >
-      <div className="md:max-w-[80%] max-w-[90%] mx-auto  lg:px-20">
+      <div className="md:max-w-[85%] max-w-[90%] mx-auto 3xl:px-20">
         {/* Header */}
-        <div className="text-center mb-10">
-          <div
+        <motion.div 
+          className="text-center mb-10"
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+        >
+          <motion.div
             className="inline-flex items-center gap-2 px-[21px] py-[9px] rounded-full border backdrop-blur"
             style={{
               border: "1px solid var(--why-choose-border)",
               background:
                 "linear-gradient(135deg, var(--why-choose-bg-gradient-start) 0%, var(--why-choose-bg-gradient-end) 100%)",
             }}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
           >
             <svg
               width="14"
@@ -124,16 +193,26 @@ const WhyChoose = () => {
             <span className="text-sm font-medium text-[var(--color-text-secondary)]">
               Why Choose 1TAP
             </span>
-          </div>
+          </motion.div>
 
-          <h2 className="mt-5 text-2xl md:text-5xl font-bold text-[var(--color-text-primary)">
+          <motion.h2 
+            className="mt-5 text-2xl md:text-5xl font-bold text-[var(--color-text-primary)"
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
             The Digital Advantage
-          </h2>
-          <p className="mt-3 text-sm md:text-lg text-gray-500 max-w-2xl mx-auto">
+          </motion.h2>
+          <motion.p 
+            className="mt-3 text-sm md:text-lg text-gray-500 max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+          >
             See how our proprietary AIO WebApp stacks up against outdated
             traditional setup providers and consulting agents.
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
 
         {/* Main Card */}
         <div
@@ -145,7 +224,7 @@ const WhyChoose = () => {
         >
           {/* Desktop: Table Header */}
           <div
-            className="hidden md:grid md:grid-cols-3 gap-4 px-8 py-5 border-b"
+            className="hidden md:grid md:grid-cols-4 gap-4 px-8 py-5 border-b"
             style={{
               borderColor: "var(--color-blue-100)",
               background:
@@ -158,11 +237,19 @@ const WhyChoose = () => {
 
             <div className="flex items-center gap-2">
               <span className="font-semibold tracking-wider text-gray-500 uppercase">
-                Traditional
+                Shuraa
               </span>
-              <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-red-100 text-red-600">
+              {/* <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-red-100 text-red-600">
                 OLD
+              </span> */}
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="font-semibold tracking-wider text-gray-500 uppercase">
+                Setmybiz
               </span>
+              {/* <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-red-100 text-red-600">
+                OLD
+              </span> */}
             </div>
 
             <div className="flex items-center gap-2">
@@ -217,7 +304,7 @@ const WhyChoose = () => {
                     </span>
                   </div>
 
-                  {/* Traditional */}
+                  {/* SHURAA */}
                   <div className="flex items-center gap-3 mb-3 pb-3 border-b border-gray-200">
                     <span
                       className="inline-flex items-center justify-center rounded-full flex-shrink-0"
@@ -231,10 +318,32 @@ const WhyChoose = () => {
                     </span>
                     <div>
                       <div className="text-xs font-semibold text-gray-500 mb-1">
-                        TRADITIONAL
+                        SHURAA
                       </div>
                       <span className="text-sm text-gray-500">
-                        {item.traditional}
+                        {item.shuraa}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* SETMYBIZ */}
+                  <div className="flex items-center gap-3 mb-3 pb-3 border-b border-gray-200">
+                    <span
+                      className="inline-flex items-center justify-center rounded-full flex-shrink-0"
+                      style={{
+                        width: 22,
+                        height: 22,
+                        background: "rgba(255, 76, 76, 0.12)",
+                      }}
+                    >
+                      <X className="w-4 h-4 text-[#FF4C4C]" />
+                    </span>
+                    <div>
+                      <div className="text-xs font-semibold text-gray-500 mb-1">
+                        SETMYBIZ
+                      </div>
+                      <span className="text-sm text-gray-500">
+                        {item.setmybiz}
                       </span>
                     </div>
                   </div>
@@ -280,14 +389,22 @@ const WhyChoose = () => {
               const Icon = item.icon;
 
               return (
-                <div
-                  key={index}
-                  className="grid grid-cols-3 gap-4 px-8 py-7 border-b last:border-b-0 transition-all duration-300 ease-in-out transform hover:scale-[1.01] hover:shadow-md group"
+                <motion.div
+                  key={`${index}-${animationKey}`}
+                  className="grid grid-cols-4 gap-4 px-8 py-7 border-b last:border-b-0 transition-all duration-300 ease-in-out transform hover:scale-[1.01] hover:shadow-md group"
                   style={{
                     borderColor: "rgba(212,228,250,0.7)",
                     background:
                       "linear-gradient(90deg, var(--why-row-from) 0%, var(--why-row-to) 65%)",
                   }}
+                  initial={{ opacity: 0, x: -50 }}
+                  animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
+                  transition={{ 
+                    duration: 0.6, 
+                    delay: 0.8 + (index * 0.1),
+                    ease: "easeOut"
+                  }}
+                  whileHover={{ scale: 1.01, x: 5 }}
                 >
                   {/* Feature */}
                   <div className="flex items-center gap-3">
@@ -307,7 +424,7 @@ const WhyChoose = () => {
                     </span>
                   </div>
 
-                  {/* Traditional (X inside chip like screenshot) */}
+                  {/* SHURAA (X inside chip like screenshot) */}
                   <div className="flex items-center gap-3">
                     <span
                       className="inline-flex items-center justify-center rounded-full"
@@ -320,7 +437,23 @@ const WhyChoose = () => {
                       <X className="w-4 h-4 text-[#FF4C4C]" />
                     </span>
 
-                    <span className="text-gray-500">{item.traditional}</span>
+                    <span className="text-gray-500">{item.shuraa}</span>
+                  </div>
+
+                  {/* SETMYBIZ (X inside chip like screenshot) */}
+                  <div className="flex items-center gap-3">
+                    <span
+                      className="inline-flex items-center justify-center rounded-full"
+                      style={{
+                        width: 22,
+                        height: 22,
+                        background: "rgba(255, 76, 76, 0.12)",
+                      }}
+                    >
+                      <X className="w-4 h-4 text-[#FF4C4C]" />
+                    </span>
+
+                    <span className="text-gray-500">{item.setmybiz}</span>
                   </div>
 
                   {/* 1TAP (Check inside chip like screenshot) */}
@@ -340,7 +473,7 @@ const WhyChoose = () => {
                       {item.tapbiz}
                     </span>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
           </div>
@@ -409,7 +542,7 @@ const WhyChoose = () => {
 
         <div className="h-2" />
       </div>
-    </section>
+    </motion.section>
   );
 };
 

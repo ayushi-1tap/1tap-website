@@ -6,6 +6,8 @@ import {
     TrendingUp,
     FileCheck,
   } from "lucide-react";
+import { motion, useInView } from "framer-motion";
+import { useRef } from "react";
   
   const reasons = [
     {
@@ -47,11 +49,25 @@ import {
   ];
   
   const Establishment = () => {
+    const ref = useRef(null);
+    const isInView = useInView(ref, { once: true, margin: "-100px" });
+
     return (
-      <section className="w-full bg-white">
+      <motion.section 
+        ref={ref}
+        className="w-full bg-white"
+        initial={{ opacity: 0 }}
+        animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+        transition={{ duration: 0.8 }}
+      >
         <div className="mx-auto w-full max-w-[85%] px-4 sm:px-6 lg:px-10 py-10 md:py-14">
           {/* Heading + subheading (like SS) */}
-          <div className="text-center">
+          <motion.div 
+            className="text-center"
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
             <h2 className="text-[20px] sm:text-[24px] md:text-[28px] font-extrabold text-[#0B1B3A]">
               Why Establish Your Business in the UAE?
             </h2>
@@ -61,12 +77,12 @@ import {
               for global success. Discover the strategic advantages that make the UAE
               the world&apos;s premier business hub.
             </p>
-          </div>
+          </motion.div>
   
           {/* Grid (flat cards, no icons, same spacing) */}
           <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {reasons.map((item, idx) => (
-              <div
+              <motion.div
                 key={idx}
                 className="
                   rounded-lg bg-[var(--color-bg-light)]
@@ -74,6 +90,14 @@ import {
                   px-6 py-5
                   shadow-[0_10px_26px_rgba(15,23,42,0.04)]
                 "
+                initial={{ opacity: 0, y: 50 }}
+                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+                transition={{ 
+                  duration: 0.6, 
+                  delay: 0.4 + (idx * 0.1),
+                  ease: "easeOut"
+                }}
+                whileHover={{ scale: 1.03, y: -5 }}
               >
                 <h3 className="text-lg font-semibold text-[#0B1B3A]">
                   {item.title}
@@ -82,11 +106,11 @@ import {
                 <p className="mt-4 text-[rgba(15,23,42,0.58)]">
                   {item.description}
                 </p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
-      </section>
+      </motion.section>
     );
   };
   

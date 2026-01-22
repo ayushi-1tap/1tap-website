@@ -1,8 +1,20 @@
 import { ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
+import { useInView } from "framer-motion";
+import { useRef } from "react";
 
 const About = () => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
   return (
-    <section className="w-full bg-[var(--color-bg-white)]">
+    <motion.section 
+      ref={ref}
+      className="w-full bg-[var(--color-bg-white)]"
+      initial={{ opacity: 0 }}
+      animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+      transition={{ duration: 0.8 }}
+    >
       <div className="w-full px-4 sm:px-6 lg:px-16 py-6 md:py-10">
         <div className="relative overflow-hidden rounded-3xl bg-white shadow-sm">
           {/* soft gradient background */}
@@ -13,23 +25,43 @@ const About = () => {
           <div className="absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-[var(--color-primary-500)] opacity-[0.10] blur-3xl" />
 
           {/* content */}
-          <div className="relative flex flex-col items-center text-center px-4 sm:px-10 md:px-16 py-12 md:py-20">
-            <h1 className="max-w-6xl text-[34px] sm:text-[44px] md:text-[60px] leading-[1.08] font-semibold text-[#0B1B3A]">
+          <motion.div 
+            className="relative flex flex-col items-center text-center px-4 sm:px-10 md:px-16 py-12 md:py-20"
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <motion.h1 
+              className="max-w-6xl text-[34px] sm:text-[44px] md:text-[60px] leading-[1.08] font-semibold text-[#0B1B3A]"
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+            >
               Your All-In-One Platform for{" "}
-              <span className="text-[var(--color-primary-600)] font-semibold decoration-[var(--color-primary-200)]">
+              <motion.span 
+                className="text-[var(--color-primary-600)] font-semibold decoration-[var(--color-primary-200)]"
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+                transition={{ duration: 1, delay: 0.8 }}
+              >
                 Business Setup in the UAE
-              </span>
-            </h1>
+              </motion.span>
+            </motion.h1>
 
-            <p className="mt-5 max-w-3xl text-sm md:text-lg font-medium text-[rgba(15,23,42,0.70)] leading-relaxed">
-              Welcome to 1TapBiz, the leading BizTech solution for entrepreneurs,
+            <motion.p 
+              className="mt-5 max-w-3xl text-sm md:text-lg font-medium text-[rgba(15,23,42,0.70)] leading-relaxed"
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+            >
+              Welcome to 1TAP, the leading BizTech solution for entrepreneurs,
               startups, and SMEs. We make company formation in Dubai and the UAE
               fast, transparent, and hassle-free.
               <br />
               Launch your dream business today.
-            </p>
+            </motion.p>
 
-            <a
+            <motion.a
               href="https://app.1tapbiz.com/signup"
               target="_blank"
               rel="noopener noreferrer"
@@ -41,16 +73,21 @@ const About = () => {
                 background:
                   "linear-gradient(92deg, var(--color-primary-500) 1.65%, var(--color-action) 98%)",
               }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ duration: 0.8, delay: 0.7 }}
+              whileHover={{ scale: 1.03, y: -2 }}
+              whileTap={{ scale: 0.98 }}
             >
               Create Your Account
               <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-            </a>
-          </div>
+            </motion.a>
+          </motion.div>
         </div>
 
    
       </div>
-    </section>
+    </motion.section>
   );
 };
 

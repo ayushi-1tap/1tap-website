@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   UserPlus,
   Landmark,
@@ -7,87 +7,112 @@ import {
   Receipt,
   CreditCard,
   ArrowRight,
+  Building2,
 } from "lucide-react";
 import QuoteModal from "../QuoteModal";
+import { motion, useInView } from "framer-motion";
 
 const BusinessManagement = () => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: false, margin: "-100px" });
+  const [animationKey, setAnimationKey] = useState(0);
   const [selectedService, setSelectedService] = useState(0);
   const [mobileOpenIndex, setMobileOpenIndex] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  useEffect(() => {
+    if (isInView) {
+      setAnimationKey(prev => prev + 1);
+    }
+  }, [isInView]);
+
   const services = [
+    {
+      icon: Building2,
+      name: "Company Set-up",
+      description:
+        "End-to-end business incorporation in Mainland, Free Zone, or Offshore jurisdictions. We handle all legal documentation, license approvals, and government coordination.",
+      benefits: [
+        "License selection & registration",
+        "MOA legal documentation",
+        "Trade name reservation",
+        "Mainland & Free Zone options",
+        "Virtual office solutions",
+        "Local partner arrangements",
+      ],
+    },
     {
       icon: UserPlus,
       name: "Visa Services",
       description:
-        "Complete visa processing for employees, shareholders, investors, and family members, including documentation, medicals, residency approvals, and government coordination.",
+        "Complete visa processing for employees, shareholders, investors, and family members. Including all paperwork, medicals, residency approvals, E-Channel registration, and government liaison.",
       benefits: [
         "Employee visa processing",
         "Shareholder & investor visas",
         "Family member visas",
         "E-Channel registration",
         "Government liaison",
-        "Medical & biometrics coordination",
+        "Medical coordination",
       ],
     },
     {
       icon: Landmark,
       name: "Bank Account Support",
       description:
-        "End-to-end assistance for opening and maintaining corporate bank accounts, including documentation and bank coordination.",
+        "Assistance with opening and managing digital business bank accounts in the UAE. Includes KYC preparation and pre-approval processing for quick access to funds.",
       benefits: [
-        "Corporate bank account opening",
-        "Documentation preparation",
-        "Bank follow-ups",
-        "Relationship management support",
-      ],
-    },
+        "Digital bank account setup",
+        "KYC document preparation",
+        "Pre-approval processing",
+        "Quick fund access"
+
+        ]      },
     {
       icon: TrendingUp,
       name: "Corporate Tax Planning",
       description:
-        "Support for corporate tax registration, planning, and compliance to ensure alignment with UAE corporate tax regulations.",
+        "Specialist tax advisory services to legally reduce liabilities, optimize your business structure, and navigate the UAE's competitive tax landscape.",
       benefits: [
-        "Corporate tax registration",
-        "Tax planning advisory",
-        "Compliance management",
-        "Regulatory guidance",
+        "Tax liability reduction",
+        "Business structure optimization",
+        "Advisory services",
+        "UAE tax expertise",
       ],
     },
     {
       icon: BookOpen,
       name: "Bookkeeping & MIS",
       description:
-        "Accurate bookkeeping and structured MIS reporting to help track financial performance and stay audit-ready.",
+        "Monthly accounting services, bookkeeping, and detailed Management Information System (MIS) reports to help track business performance and compliance.",
       benefits: [
-        "Monthly bookkeeping",
-        "MIS & financial reporting",
-        "Expense tracking",
-        "Audit-ready records",
+        "Monthly accounting",
+        "Detailed bookkeeping",
+        "MIS reports",
+        "Performance tracking",
       ],
     },
     {
       icon: Receipt,
       name: "Annual VAT Returns",
       description:
-        "Preparation, reconciliation, and filing of VAT returns in compliance with UAE VAT regulations.",
+        "Annual VAT filing service for businesses exceeding the minimum turnover threshold (AED 150,000), ensuring timely and accurate submission to the FTA.",
       benefits: [
-        "VAT return filing",
-        "Input-output reconciliation",
-        "Document verification",
-        "FTA compliance support",
+        "Annual VAT filing",
+        "FTA submission",
+        "Timely processing",
+        "Accuracy guaranteed",
       ],
     },
     {
       icon: CreditCard,
       name: "Payroll and WPS",
       description:
-        "Payroll processing with full WPS compliance to ensure accurate and timely salary disbursement.",
+        "Complete management of staff payroll, full WPS (Wages Protection System) compliance, and timely salary disbursement and auditing services.",
       benefits: [
-        "Payroll processing",
+        "Full payroll management",
         "WPS compliance",
-        "Salary transfers",
-        "Employee payroll records",
+        "Timely disbursement",
+        "Auditing services",
       ],
     },
   ];
@@ -96,18 +121,39 @@ const BusinessManagement = () => {
   const ActiveIcon = current.icon;
 
   return (
-    <section className="w-full py-16 bg-[#F7FAFE]">
+    <motion.section 
+      ref={ref}
+      className="w-full py-16 bg-[#F7FAFE]"
+      initial={{ opacity: 0 }}
+      animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+      transition={{ duration: 0.8 }}
+    >
       <div className="md:max-w-[85%] max-w-[90%] mx-auto px-2 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center md:mb-14 mb-8">
-          <h2 className="text-2xl md:text-5xl font-bold text-[var(--color-text-primary)]">
+        <motion.div 
+          className="text-center md:mb-14 mb-8"
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+        >
+          <motion.h2 
+            className="text-2xl md:text-5xl font-bold text-[var(--color-text-primary)]"
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+          >
             Your Complete Business Management Solution
-          </h2>
-          <p className="mt-4 text-sm md:text-lg text-[var(--why-choose-secondary)] max-w-3xl mx-auto">
+          </motion.h2>
+          <motion.p 
+            className="mt-4 text-sm md:text-lg text-[var(--why-choose-secondary)] max-w-3xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+          >
             Whether you need a full package deal or annual service renewal, 1TAP
             manages everything end-to-end – saving you time, money, and effort.
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
 
         {/* Mobile: FAQ-style accordion */}
         <div className="lg:hidden space-y-3">
@@ -189,11 +235,19 @@ const BusinessManagement = () => {
                   const isActive = idx === selectedService;
 
                   return (
-                    <button
-                      key={s.name}
+                    <motion.button
+                      key={`${s.name}-${animationKey}`}
                       type="button"
                       onClick={() => setSelectedService(idx)}
                       className="w-full text-left transition-all duration-300 ease-in-out"
+                      initial={{ opacity: 0, x: -30 }}
+                      animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -30 }}
+                      transition={{ 
+                        duration: 0.5, 
+                        delay: 0.7 + (idx * 0.1),
+                        ease: "easeOut"
+                      }}
+                      whileHover={{ x: 5 }}
                     >
                       {isActive ? (
                         <div
@@ -235,20 +289,28 @@ const BusinessManagement = () => {
                           </div>
                         </div>
                       )}
-                    </button>
+                    </motion.button>
                   );
                 })}
               </div>
             </div>
 
             {/* RIGHT (stretches full height) */}
-            <div className="h-full p-8 ">
-              <div
+            <motion.div 
+              className="h-full p-8"
+              initial={{ opacity: 0, x: 50 }}
+              animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 50 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+            >
+              <motion.div
                 className="h-full rounded-2xl  p-8 lg:p-10"
                 style={{
                   background: "white",
                   boxShadow: "4px 16px 48px rgba(0,0,0,0.08)",
                 }}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.6, delay: 0.8 }}
               >
                 <div
                   className="w-14 h-14 rounded-2xl flex items-center justify-center"
@@ -281,18 +343,21 @@ const BusinessManagement = () => {
                     ))}
                   </ul>
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </div>
         </div>
 
         {/* Bottom CTA card (same as screenshot) */}
-        <div
+        <motion.div
           className="mt-8 rounded-2xl bg-[var(--color-bg-white)] px-8 py-10 text-center "
           style={{
             borderColor: "var(--color-blue-100)",
             boxShadow: "0 18px 45px rgba(0,0,0,0.05)",
           }}
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ duration: 0.8, delay: 1.2 }}
         >
           <h3 className="text-lg md:text-[24px] font-bold text-[var(--color-text-primary)]">
             Ready for Complete Business Automation?
@@ -315,12 +380,12 @@ const BusinessManagement = () => {
               <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
             </button>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Quote Modal */}
       <QuoteModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-    </section>
+    </motion.section>
   );
 };
 

@@ -80,7 +80,7 @@ const Navbar = () => {
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1 sm:gap-2
-                       h-8 sm:h-9 px-3 sm:px-4 rounded-md text-sm sm:text-base
+                       h-8 md:h-9 px-3 sm:px-4 rounded-md text-sm sm:text-base
                        bg-[var(--color-primary-600)]
                        text-[var(--color-text-reverse)]
                        hover:bg-[var(--color-primary-700)]

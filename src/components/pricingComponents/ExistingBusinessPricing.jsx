@@ -73,7 +73,7 @@ const ExistingBusinessPricing = ({ onViewAddOn }) => {
                 {pkg.isRecommended && (
                   <div className="absolute -top-5 left-1/2 -translate-x-1/2 z-30 ">
                     <span className="px-5 py-1.5 rounded-full text-xs font-bold tracking-widest text-white bg-[var(--color-primary-600)] border-2 border-white shadow-md">
-                      MOST POPULAR
+                      RECOMMENDED
                     </span>
                   </div>
                 )}
@@ -121,7 +121,7 @@ const ExistingBusinessPricing = ({ onViewAddOn }) => {
                     if (typeof feature === "string") {
                       return (
                         <div key={idx} className="flex gap-3 group">
-                          <Check className="h-5 w-5 text-[var(--color-primary-600)] mt-0.5 flex-shrink-0 transition-transform duration-300 group-hover:scale-110" />
+                          <div className="flex items-center rounded-full bg-[var(--color-primary-50)] p-1"><Check className="h-4 w-4 text-[var(--color-primary-600)] mt-0.5 flex-shrink-0 transition-transform duration-300 group-hover:scale-110" /></div>
                           <span className="text-sm text-[#0B1B3A] transition-colors duration-300 group-hover:text-[var(--color-primary-600)]">
                             {feature}
                           </span>
@@ -142,7 +142,7 @@ const ExistingBusinessPricing = ({ onViewAddOn }) => {
 
                     return (
                       <div key={idx} className="flex gap-3 group">
-                        <Check className="h-5 w-5 text-[var(--color-primary-600)] mt-0.5 flex-shrink-0 transition-transform duration-300 group-hover:scale-110" />
+                      <div className="flex items-center rounded-full bg-[var(--color-primary-50)] p-1"><Check className="h-4 w-4 text-[var(--color-primary-600)] mt-0.5 flex-shrink-0 transition-transform duration-300 group-hover:scale-110" /></div>
                         <span className="text-[#0B1B3A] transition-colors duration-300 group-hover:text-[var(--color-primary-600)]">
                           {feature.text}
                         </span>
@@ -178,7 +178,7 @@ const ExistingBusinessPricing = ({ onViewAddOn }) => {
               {pkg.isRecommended && (
                 <div className="absolute -top-5 left-1/2 -translate-x-1/2 z-30">
                   <span className="px-5 py-1.5 rounded-full text-xs font-bold tracking-widest text-white bg-[var(--color-primary-600)] border-2 border-white shadow-md">
-                    MOST POPULAR
+                    RECOMMENDED
                   </span>
                 </div>
               )}
@@ -234,7 +234,7 @@ const ExistingBusinessPricing = ({ onViewAddOn }) => {
                   if (typeof feature === "string") {
                     return (
                       <div key={idx} className="flex gap-3 group">
-                        <Check className="h-5 w-5 text-[var(--color-primary-600)] mt-0.5 flex-shrink-0 transition-transform duration-300 group-hover:scale-110" />
+                        <div className="flex items-center rounded-full bg-[var(--color-primary-50)] p-1"><Check className="h-4 w-4 text-[var(--color-primary-600)] mt-0.5 flex-shrink-0 transition-transform duration-300 group-hover:scale-110" /></div>
                         <span className="text-[#0B1B3A] transition-colors duration-300 group-hover:text-[var(--color-primary-600)]">
                           {feature}
                         </span>
@@ -255,7 +255,7 @@ const ExistingBusinessPricing = ({ onViewAddOn }) => {
 
                   return (
                     <div key={idx} className="flex gap-3 group">
-                      <Check className="h-5 w-5 text-[var(--color-primary-600)] mt-0.5 flex-shrink-0 transition-transform duration-300 group-hover:scale-110" />
+                      <div className="flex items-center rounded-full bg-[var(--color-primary-50)] p-1"><Check className="h-4 w-4 text-[var(--color-primary-600)] mt-0.5 flex-shrink-0 transition-transform duration-300 group-hover:scale-110" /></div>
                       <span className=" text-[#0B1B3A] transition-colors duration-300 group-hover:text-[var(--color-primary-600)]">
                         {feature.text}
                       </span>

@@ -1,17 +1,21 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Building2, Briefcase, Plus } from "lucide-react";
 import NewBusinessPricing from "./NewBusinessPricing";
 import ExistingBusinessPricing from "./ExistingBusinessPricing";
 import AddOnServices from "./AddOnServices";
+import { motion, useInView } from "framer-motion";
 
 const PricingSection = () => {
   const [activeTab, setActiveTab] = useState("new");
   const sectionRef = useRef(null);
+  const headingRef = useRef(null);
+  const isInView = useInView(headingRef, { once: true, margin: "-50px" });
+  const [typingProgress, setTypingProgress] = useState(0);
 
   const tabs = [
-    { id: "new", label: "New Business", icon: Briefcase },
-    { id: "existing", label: "Existing Business", icon: Building2 },
-    { id: "addon", label: "Add-On Services", icon: Plus },
+    { id: "new", label: "New Business Packages", icon: Briefcase },
+    { id: "existing", label: "Existing Business Packages", icon: Building2 },
+    { id: "addon", label: "Add-On Packages", icon: Plus },
   ];
 
   const handleViewAddOn = () => {
@@ -27,6 +31,30 @@ const PricingSection = () => {
     }, 100);
   };
 
+  useEffect(() => {
+    if (isInView) {
+      setTypingProgress(0);
+      const text = "Flexible";
+      const duration = 1500; // 1.5 seconds
+      const interval = duration / text.length;
+      let currentIndex = 0;
+
+      const timer = setInterval(() => {
+        currentIndex++;
+        setTypingProgress((currentIndex / text.length) * 100);
+        
+        if (currentIndex >= text.length) {
+          clearInterval(timer);
+          setTypingProgress(100);
+        }
+      }, interval);
+
+      return () => clearInterval(timer);
+    } else {
+      setTypingProgress(0);
+    }
+  }, [isInView]);
+
   return (
     <section
       ref={sectionRef}
@@ -34,9 +62,12 @@ const PricingSection = () => {
     >
       <div className="relative max-w-[85%] md:max-w-[93%] 3xl:max-w-[85%] mx-auto md:px-4 ">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-2xl md:text-5xl lg:text-[56px] leading-tight font-bold text-[var(--color-text-primary)] mb-4">
-            Flexible Pricing That Grows With Your Business
+        <div className="text-center mb-8" ref={headingRef}>
+          <h1 className="text-2xl md:text-5xl lg:text-[56px] leading-tight font-bold mb-4">
+       
+            <span className="text-[var(--color-text-primary)]">
+              Pricing That Grows With Your Business
+            </span>
           </h1>
           <p className="text-sm md:text-xl text-[var(--color-text-secondary)] max-w-3xl mx-auto">
             Clear plans, transparent pricing, and add-ons when you need them.

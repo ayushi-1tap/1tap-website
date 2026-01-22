@@ -1,7 +1,20 @@
 import { FileText, LayoutDashboard, Zap, ArrowRight } from "lucide-react";
 import worldMap from "../../assets/Map.svg";
+import { motion } from "framer-motion";
+import { useInView } from "framer-motion";
+import { useRef, useEffect, useState } from "react";
 
 const Welcome = () => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: false, margin: "-100px" });
+  const [animationKey, setAnimationKey] = useState(0);
+
+  useEffect(() => {
+    if (isInView) {
+      setAnimationKey(prev => prev + 1);
+    }
+  }, [isInView]);
+
   const features = [
     {
       icon: FileText,
@@ -24,7 +37,13 @@ const Welcome = () => {
   ];
 
   return (
-    <section className="w-full py-14 relative overflow-hidden bg-[var(--color-bg-white)]">
+    <motion.section 
+      ref={ref}
+      className="w-full py-14 relative overflow-hidden bg-[var(--color-bg-white)]"
+      initial={{ opacity: 0 }}
+      animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+      transition={{ duration: 0.8 }}
+    >
       {/* soft blue gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-primary-50)] via-white to-[var(--color-primary-50)]" />
 
@@ -52,26 +71,51 @@ const Welcome = () => {
 
       <div className="relative md:max-w-[80%] max-w-[90%] mx-auto px-2 sm:px-6 ">
         {/* Header */}
-        <div className="text-center">
-          <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-[rgba(46,149,244,0.10)]">
+        <motion.div 
+          className="text-center"
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+        >
+          <motion.div 
+            className="inline-flex items-center px-3 py-1.5 rounded-full bg-[rgba(46,149,244,0.10)]"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
             <span className=" font-medium text-[var(--color-primary-600)]">
               Your Founder Journey Starts Here
             </span>
-          </div>
+          </motion.div>
 
-          <h2 className="mt-5 text-2xl md:text-5xl lg:text-6xl font-bold text-[var(--color-text-primary)]">
+          <motion.h2 
+            className="mt-5 text-2xl md:text-5xl lg:text-6xl font-bold text-[var(--color-text-primary)]"
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
             Welcome,{" "}
-            <span className="text-[var(--color-primary-600)]">
+            <motion.span 
+              className="text-[var(--color-primary-600)]"
+              initial={{ opacity: 0 }}
+              animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+              transition={{ duration: 1, delay: 0.8 }}
+            >
               Future Founder
-            </span>
-          </h2>
+            </motion.span>
+          </motion.h2>
 
-          <p className="mt-4 text-sm md:text-lg text-gray-500 max-w-2xl mx-auto">
+          <motion.p 
+            className="mt-4 text-sm md:text-lg text-gray-500 max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+          >
             Did you know the global tax rate outside the UAE often exceeds 23%,
             while the UAE starts at just 0–9%? With 1TAP, secure 100% ownership
             and complete end-to-end solutions to start and scale your business.
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
 
         {/* Map + Cards */}
         <div className="relative mt-8 w-full">
@@ -81,24 +125,39 @@ const Welcome = () => {
               const Icon = feature.icon;
 
               return (
-                <div
-                  key={index}
+                <motion.div
+                  key={`${index}-${animationKey}`}
                   className="rounded-2xl p-7 border transition-all duration-300 ease-in-out transform hover:scale-[1.03] hover:shadow-xl group"
                   style={{
                     border: "1px solid rgba(46,149,244,0.26)",
                     background: "rgba(255,255,255,0.3)",
                     boxShadow: "0 18px 45px rgba(12,120,220,0.10)",
                   }}
+                  initial={{ opacity: 0, y: 50, x: index % 2 === 0 ? -30 : 30 }}
+                  animate={isInView ? { opacity: 1, y: 0, x: 0 } : { opacity: 0, y: 50, x: index % 2 === 0 ? -30 : 30 }}
+                  transition={{ 
+                    duration: 0.6, 
+                    delay: 0.8 + (index * 0.15),
+                    ease: "easeOut"
+                  }}
+                  whileHover={{ scale: 1.03, y: -5 }}
                 >
-                  <div
+                  <motion.div
                     className="w-11 h-11 rounded-xl flex items-center justify-center mb-5 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6"
                     style={{
                       background: "rgba(12,120,220,0.12)",
                       border: "1px solid rgba(12,120,220,0.20)",
                     }}
+                    initial={{ opacity: 0, scale: 0, rotate: -180 }}
+                    animate={isInView ? { opacity: 1, scale: 1, rotate: 0 } : { opacity: 0, scale: 0 }}
+                    transition={{ 
+                      duration: 0.5, 
+                      delay: 1 + (index * 0.15),
+                      ease: "easeOut"
+                    }}
                   >
                     <Icon className="w-5 h-5 text-[var(--color-primary-600)] transition-transform duration-300" />
-                  </div>
+                  </motion.div>
 
                   <div className="font-semibold tracking-wider text-[rgba(95,107,133,0.95)] uppercase">
                     {feature.label}
@@ -111,27 +170,37 @@ const Welcome = () => {
                   <p className="mt-2  font-medium text-[rgba(95,107,133,0.9)] leading-relaxed">
                     {feature.description}
                   </p>
-                </div>
+                </motion.div>
               );
             })}
           </div>
 
           {/* CTA */}
-          <div className="relative mt-10 flex justify-center">
-            <a href="https://app.1tapbiz.com/signup" target="_blank" rel="noopener noreferrer"
+          <motion.div 
+            className="relative mt-10 flex justify-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.8, delay: 1.3 }}
+          >
+            <motion.a 
+              href="https://app.1tapbiz.com/signup" 
+              target="_blank" 
+              rel="noopener noreferrer"
               className="h-11 px-6 rounded-md text-white font-semibold  inline-flex items-center gap-2 transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 hover:shadow-xl group"
               style={{
                 background: "var(--color-primary-600)",
                 boxShadow: "0 14px 30px rgba(12,120,220,0.22)",
               }}
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
             >
               See Your Dashboard in Action{" "}
               <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
-            </a>
-          </div>
+            </motion.a>
+          </motion.div>
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 };
 

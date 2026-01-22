@@ -186,15 +186,14 @@ const Footer = () => {
                   Chat Now
                 </a>
 
-                <button className="w-full h-10 rounded-[8px] bg-[var(--footer-btn-meet)] hover:opacity-95 transition-opacity flex items-center justify-center gap-2 text-white text-[14px] font-medium">
+                <a href="https://calendly.com/1tapbiz/consult" target="_blank" rel="noopener noreferrer" className="w-full h-10 rounded-[8px] bg-[var(--footer-btn-meet)] hover:opacity-95 transition-opacity flex items-center justify-center gap-2 text-white text-[14px] font-medium">
                   <Calendar className="h-4 w-4" />
                   Schedule a Meet
-                </button>
+                </a>
 
                 <a
                   href="mailto:hello@1tapbiz.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
+             
                   className="w-full h-10 rounded-[8px] bg-[var(--footer-btn-email)] hover:opacity-95 transition-opacity flex items-center justify-center gap-2 text-[#1f2329] text-[14px] font-semibold"
                 >
                   <Mail className="h-4 w-4" />

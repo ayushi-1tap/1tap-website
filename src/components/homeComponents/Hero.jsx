@@ -8,6 +8,10 @@ import {
 } from "lucide-react";
 import intlTelInput from "intl-tel-input";
 import { createLeadFromWebsite } from "../../utils/api";
+import { motion } from "framer-motion";
+import image3 from "../../assets/image 3.avif";
+import dummyCustomer from "../../assets/dummy customer -1.avif";
+import image2 from "../../assets/image 2.avif";
 
 const features = [
   {
@@ -80,10 +84,10 @@ const Hero = () => {
           "https://cdn.jsdelivr.net/npm/intl-tel-input@25.15.0/build/js/utils.js",
       });
 
-      // Wait for utils to load before enabling strict validation
+
       if (phoneInputRef.current) {
         phoneInputRef.current.addEventListener("countrychange", () => {
-          // Force re-validation when country changes
+      
           if (phoneInputRef.current) {
             phoneInputRef.current.dispatchEvent(new Event("input"));
           }
@@ -278,10 +282,15 @@ const Hero = () => {
   };
 
   return (
-    <section className="w-full bg-[var(--color-bg-white)]">
+    <motion.section 
+      className="w-full bg-[var(--color-bg-white)]"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6 }}
+    >
       {/* page padding */}
-      <div className="w-full px-4 sm:px-6 lg:px-16 py-6 md:py-10">
-        {/* panel (not full-page bg) */}
+      <div className="w-full px-4 sm:px-6 lg:px-16 py-10">
+        
         <div className="relative overflow-hidden rounded-3xl bg-[var(--color-bg-white)] shadow-sm">
           {/* soft blue gradient */}
           <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-primary-50)] via-white to-[var(--color-primary-50)]" />
@@ -300,61 +309,132 @@ const Hero = () => {
           <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-[var(--color-primary-500)] opacity-[0.10] blur-3xl" />
           <div className="absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-[var(--color-primary-500)] opacity-[0.10] blur-3xl" />
 
-          <div className="relative flex flex-col md:flex-row md:justify-between md:items-center p-4 md:p-8 md:px-16 md:py-20 gap-8 md:gap-0">
+          <div className="relative flex flex-col md:flex-row md:justify-between md:items-center p-4 md:p-8 3xl:px-16 3xl:py-20 gap-8 md:gap-0">
             {/* LEFT */}
-            <div className="w-full md:max-w-[50%]">
+            <motion.div 
+              className="w-full md:max-w-[55%] 3xl:max-w-[50%]"
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+            >
               {/* trust pill */}
-              <div className="inline-flex items-center gap-2 rounded-full border border-[var(--color-blue-100)] bg-white/70 px-3 py-2 text-xs md:py-2.5 md:text-sm text-[var(--color-text-primary)] backdrop-blur">
-                {/* <span className="flex -space-x-2">
-                  <span className="h-4 w-4 md:h-5 md:w-5 rounded-full bg-[var(--color-blue-100)] border border-white" />
-                  <span className="h-4 w-4 md:h-5 md:w-5 rounded-full bg-[var(--color-primary-100)] border border-white" />
-                  <span className="h-4 w-4 md:h-5 md:w-5 rounded-full bg-[var(--color-primary-50)] border border-white" />
-                </span> */}
-                <span className="whitespace-nowrap">
+              <motion.div 
+                className="inline-flex items-center gap-2 rounded-full border border-[var(--color-blue-100)] bg-white/70 px-3 py-2 text-xs md:py-2.5 md:text-sm text-[var(--color-text-primary)] backdrop-blur"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
+                <span className="flex -space-x-2">
+                  <img 
+                    src={image3} 
+                    alt="Customer" 
+                    className="h-4 w-4 md:h-6 md:w-6 rounded-full border border-white object-cover" 
+                  />
+                  <img 
+                    src={dummyCustomer} 
+                    alt="Customer" 
+                    className="h-4 w-4 md:h-6 md:w-6 rounded-full border border-white object-cover" 
+                  />
+                  <img 
+                    src={image2} 
+                    alt="Customer" 
+                    className="h-4 w-4 md:h-6 md:w-6 rounded-full border border-white object-cover" 
+                  />
+                </span>
+                <span className="whitespace-nowrap ">
                   Trusted by founders all around the world
                 </span>
-              </div>
+              </motion.div>
 
-              <h1 className="mt-4 md:mt-5 text-3xl md:text-[60px] leading-[1.1] md:leading-[1.05] font-semibold text-[var(--color-neutral-800)]">
-                Setup or Run Your UAE Business{" "}
-                <span className="text-[var(--color-primary-600)]">
-                  100% Online.
-                </span>
-              </h1>
+              <motion.h1 
+                className="mt-4 md:mt-6 text-3xl md:text-[45px] 3xl:text-[64px] leading-[1.1] md:leading-[1.05] font-semibold text-[var(--color-neutral-800)]"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.3 }}
+              >
+                Setup or Run Your UAE Business the Smart Way. {" "}
+                <motion.span 
+                  className="text-[var(--color-primary-600)] relative"
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: "auto" }}
+                  transition={{ 
+                    duration: 1.2, 
+                    delay: 0.8,
+                    ease: "easeInOut"
+                  }}
+                >
+                  <motion.span
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 1.2 }}
+                  >
+                    100% Online.
+                  </motion.span>
+             
+                </motion.span>
+              </motion.h1>
 
-              <p className="mt-4 md:mt-5 font-medium text-sm md:text-base text-[#3C3C3C] max-w-lg">
+              <motion.p 
+                className="mt-4 md:mt-5 font-medium text-sm md:text-base text-[#3C3C3C] max-w-lg"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+              >
                 Setup your Business in the UAE Today! Experience the future of
                 business setup. Our AIO WebApp simplifies the entire process
                 from company formation and visa processing, ID Cards to instant
                 bank account opening.
-              </p>
+              </motion.p>
 
               {/* smaller feature pills */}
-              <div className="mt-6 md:mt-10 flex flex-wrap gap-2">
-                {features.map((feature) => {
+              <div className="mt-6 md:mt-14 flex flex-wrap gap-2">
+                {features.map((feature, index) => {
                   const IconComponent = feature.icon;
                   return (
-                    <span
+                    <motion.span
                       key={feature.title}
                       className="inline-block rounded-md p-[1px] border border-[var(--color-blue-100)] transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-md"
+                      initial={{ opacity: 0, x: -30, scale: 0.8 }}
+                      animate={{ opacity: 1, x: 0, scale: 1 }}
+                      transition={{ 
+                        duration: 0.6, 
+                        delay: 0.7 + (index * 0.1),
+                        ease: "easeOut"
+                      }}
+                      whileHover={{ scale: 1.05, y: -2 }}
                     >
                       <span className="inline-flex items-center gap-2 rounded-md bg-opacity-50 bg-white/30 px-3 md:px-4 py-2 md:py-2.5 text-[var(--color-text-primary)] group">
-                        <IconComponent
-                          className="h-3.5 w-3.5 md:h-4 md:w-4 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6"
-                          style={{ color: feature.iconColor }}
-                        />
+                        <motion.div
+                          initial={{ opacity: 0, x: -20, rotate: -45 }}
+                          animate={{ opacity: 1, x: 0, rotate: 0 }}
+                          transition={{ 
+                            duration: 0.5, 
+                            delay: 0.9 + (index * 0.1),
+                            ease: "easeOut"
+                          }}
+                        >
+                          <IconComponent
+                            className="h-3.5 w-3.5 md:h-4 md:w-4 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6"
+                            style={{ color: feature.iconColor }}
+                          />
+                        </motion.div>
                         <span className="text-xs md:text-sm font-medium">
                           {feature.title}
                         </span>
                       </span>
-                    </span>
+                    </motion.span>
                   );
                 })}
               </div>
 
               {/* CTA row */}
-              <div className="mt-6 md:mt-7 flex flex-col md:flex-row items-stretch md:items-center gap-3 md:gap-4 ">
-                <a
+              <motion.div 
+                className="mt-6 md:mt-7 flex flex-col md:flex-row items-stretch md:items-center gap-3 md:gap-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 1.1 }}
+              >
+                <motion.a
                   href="https://app.1tapbiz.com/signup"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -365,29 +445,41 @@ const Hero = () => {
                     background:
                       "linear-gradient(92deg, var(--color-primary-500) 1.65%, var(--color-action) 98%)",
                   }}
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
                 >
                   Start my Company{" "}
                   <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-                </a>
+                </motion.a>
 
-                <a
+                <motion.a
                   href="https://api.whatsapp.com/send/?phone=971503586038"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-center sm:text-left font-medium text-sm md:text-base text-[#3C3C3C] hover:text-[var(--color-primary-600)] transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 underline"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
                 >
                   Talk to an expert
-                </a>
-              </div>
-            </div>
+                </motion.a>
+              </motion.div>
+            </motion.div>
 
             {/* RIGHT: glass form */}
-            <div className="w-full md:w-[40%] lg:flex">
-              <div
+            <motion.div 
+              className="w-full md:w-[40%] lg:flex"
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+            >
+              <motion.div
                 className="w-full rounded-2xl
                            border border-white/40 bg-[var(--color-primary-500)])
                            shadow-[0_10px_30px_rgba(12,120,220,0.14)]
                          p-5 md:p-6 lg:p-7"
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.6 }}
               >
                 <h3 className="text-xl md:text-2xl lg:text-3xl font-semibold text-[var(--color-primary-600)]">
                   Start Your Business in the right Free Zone
@@ -527,15 +619,15 @@ const Hero = () => {
                     </p>
                   )}
                 </form>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </div>
         </div>
 
         {/* spacing below like screenshot */}
         <div className="h-6" />
       </div>
-    </section>
+    </motion.section>
   );
 };
 

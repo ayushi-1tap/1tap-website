@@ -29,7 +29,7 @@ const FAQ = ({ faqs }) => {
               <button
                 key={idx}
                 onClick={() => setOpenIndex(idx)}
-                className={`relative flex-shrink-0 rounded-2xl transition-all text-left mb-4 md:mb-0
+                className={`relative flex-shrink-0 rounded-2xl transition-opacity duration-500 text-left mb-4 md:mb-0
                   ${
                     isOpen
                       ? "w-full md:w-[480px] p-6 md:p-10"
