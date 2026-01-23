@@ -46,6 +46,21 @@ const QuoteModal = ({ isOpen, onClose }) => {
         utilsScript:
           "https://cdn.jsdelivr.net/npm/intl-tel-input@25.15.0/build/js/utils.js",
       });
+
+      if (phoneInputRef.current) {
+        phoneInputRef.current.addEventListener("countrychange", () => {
+          if (phoneInputRef.current) {
+            phoneInputRef.current.dispatchEvent(new Event("input"));
+          }
+        });
+        
+        // Sync state with input value on change (for validation)
+        phoneInputRef.current.addEventListener("input", () => {
+          if (phoneInputRef.current) {
+            setFormData((prev) => ({ ...prev, phone: phoneInputRef.current.value }));
+          }
+        });
+      }
     };
 
     initIntlTelInput();
@@ -95,28 +110,29 @@ const QuoteModal = ({ isOpen, onClose }) => {
       e.email = "Please enter a valid email address.";
     }
 
-    // Get the actual value from the input element for validation
-    const phoneInputValue = phoneInputRef.current?.value || formData.phone;
-    if (!phoneInputValue || !phoneInputValue.trim()) {
+    // Get the current value from input (most up-to-date) or fall back to state
+    const currentInputValue = phoneInputRef.current?.value?.trim() || formData.phone.trim();
+    if (!currentInputValue) {
       e.phone = "Phone Number is required.";
-    } else if (itiRef.current) {
+    } else if (itiRef.current && phoneInputRef.current) {
       // Check if utils are loaded before using strict validation
       const utilsLoaded = window.intlTelInputUtils !== undefined;
       if (utilsLoaded) {
-        // Use strict validation only if utils are loaded
+        // Use strict validation - isValidNumber() reads from the input element
+        // Ensure we're checking the current input value
         if (!itiRef.current.isValidNumber()) {
           e.phone = "Please enter a valid phone number.";
         }
       } else {
         // Fallback: check if there are enough digits (at least 7)
-        const digitsOnly = phoneInputValue.replace(/\D/g, "");
+        const digitsOnly = currentInputValue.replace(/\D/g, "");
         if (digitsOnly.length < 7) {
           e.phone = "Phone Number must be at least 7 digits.";
         }
       }
     } else {
       // Fallback validation if intl-tel-input isn't initialized yet
-      const digitsOnly = phoneInputValue.trim().replace(/\D/g, "");
+      const digitsOnly = currentInputValue.replace(/\D/g, "");
       if (digitsOnly.length < 7) {
         e.phone = "Phone Number must be at least 7 digits.";
       }
@@ -169,6 +185,7 @@ const QuoteModal = ({ isOpen, onClose }) => {
       ...prev,
       [name]: filteredValue,
     }));
+    // The input event listener will sync the formatted value from intl-tel-input
   };
 
   const handleBlur = (field) => () => {
