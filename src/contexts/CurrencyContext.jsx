@@ -10,13 +10,7 @@ import {
 
 const CurrencyContext = createContext();
 
-/**
- * Base prices are currently stored in USD in your data.
- * We will convert USD -> AED first (AED is the base = 1),
- * then AED -> selected currency (USD supported using your strict rate).
- */
 
-// Base prices in USD
 const BASE_PRICES = {
   // New Business Packages
   "incorporation-basic": 897,

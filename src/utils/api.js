@@ -18,7 +18,8 @@ export const createLeadFromWebsite = async (payload) => {
 
   try {
     const response = await axiosInstance.post(
-      "https://erp.1tap.app/api/method/erp_1tap.erp_1tap.api_integrations.create_lead_from_email",
+      // "https://erp.1tap.app/api/method/erp_1tap.erp_1tap.api_integrations.create_lead_from_email",
+      "https://dev.1tap.app/api/method/erp_1tap.erp_1tap.api_integrations.create_lead_from_email",
       { data: payload }
     );
     console.log(response, "yyyyyyyyyy");
