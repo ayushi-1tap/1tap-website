@@ -38,6 +38,8 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
+          # Avoid "Multiple artifacts named 'github-pages'" when re-running jobs.
+          name: github-pages-${{ github.run_attempt }}
           path: dist
 
   deploy:
@@ -50,3 +52,5 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          artifact_name: github-pages-${{ github.run_attempt }}
