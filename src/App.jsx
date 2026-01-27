@@ -10,7 +10,7 @@ import ContactUs from "./pages/ContactUs"
 export default function App() {
   return (
     <CurrencyProvider>
-      <BrowserRouter>
+      <BrowserRouter basename={import.meta.env.BASE_URL}>
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
