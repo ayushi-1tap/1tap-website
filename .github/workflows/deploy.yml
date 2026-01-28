@@ -29,7 +29,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-        working-directory: 1tap-website
 
       - name: Build
         env:
@@ -38,13 +37,12 @@ jobs:
           VITE_API_Frappe_apiKey: ${{ secrets.VITE_API_Frappe_apiKey }}
           VITE_API_Frappe_apiSecret: ${{ secrets.VITE_API_Frappe_apiSecret }}
         run: npm run build
-        working-directory: 1tap-website
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           name: github-pages-${{ github.run_attempt }}
-          path: 1tap-website/dist
+          path: dist
 
   deploy:
     needs: build
