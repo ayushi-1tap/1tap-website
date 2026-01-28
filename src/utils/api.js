@@ -2,8 +2,15 @@ import axios from "axios";
 
 // Frappe API – from .env (Vite exposes only VITE_* vars)
 const baseURL = import.meta.env.VITE_API_FrappeBaseUrl || "https://dev.1tap.app";
-const apiKey = import.meta.env.VITE_API_Frappe_apiKey;
-const apiSecret = import.meta.env.VITE_API_Frappe_apiSecret;
+const apiKey = import.meta.env.VITE_API_Frappe_apiKey || "043f6266f78cfa1";
+const apiSecret = import.meta.env.VITE_API_Frappe_apiSecret || "be66214ffb9f2e7";
+
+// Dev only: warn if API auth is missing (403 usually means wrong key or Frappe user permissions)
+if (import.meta.env.DEV && (!apiKey || !apiSecret)) {
+  console.warn(
+    "[1Tap API] VITE_API_Frappe_apiKey or apiSecret missing. Add them to .env and restart dev server."
+  );
+}
 
 const headers = {
   "Content-Type": "application/json",
