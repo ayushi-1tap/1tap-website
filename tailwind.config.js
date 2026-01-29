@@ -22,6 +22,9 @@ export default {
       "h-xl": { raw: "(min-height: 1000px)" },
     },
     extend: {
+      fontFamily: {
+        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+      },
       colors: {
         white: "#FFFFFF",
         black: "#2A2626",

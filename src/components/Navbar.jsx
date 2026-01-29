@@ -16,7 +16,7 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <nav className="w-full bg-[var(--color-bg-white)] border-b shadow-md relative">
+    <nav className="fixed top-0 left-0 right-0 z-50 w-full bg-[var(--color-bg-white)]/90 backdrop-blur-md  border-b shadow-md">
       <div className="w-full px-4 sm:px-6 md:px-10 h-16 md:h-20 flex items-center justify-between">
         {/* Left: Logo */}
         <Link to="/" className="flex items-center shrink-0">

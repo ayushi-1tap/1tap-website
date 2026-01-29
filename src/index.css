@@ -4,6 +4,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Site font */
+body {
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
 /* Smooth scrolling for the entire page */
 html {
   scroll-behavior: smooth;
@@ -22,45 +27,45 @@ html {
   --color-primary-700: #095aa5;
   --color-primary-800: #063c6e;
   --color-primary-900: #031e37;
-  
+
   /* Action Colors */
   --color-action: #186ade;
   --color-clicked: #d100d9;
-  
+
   /* Text Colors */
   --color-text-primary: #1f2329;
   --color-text-reverse: #ffffff;
-  --color-text-secondary:#3C3C3C;
-  
+  --color-text-secondary: #3C3C3C;
+
   /* Neutral Colors */
   --color-neutral-100: #ffffff;
   --color-neutral-500: #a0a3bd;
   --color-neutral-800: #170f49;
-  
+
   /* Green */
   --color-green-300: #43c478;
-  
+
   /* Blue Variants */
   --color-blue-100: #d4e4fa;
   --color-blue-600: #0d4ea6;
-  
+
   /* Endevour */
   --color-endevour-700: #113261;
-  
+
   /* Background Colors */
   --color-bg-white: #ffffff;
   --color-bg-light: #f8f8f8;
   --color-bg-secondary: #f2f2f7;
-  
+
   /* Spacing */
   --spacing-1: 8px;
-  
+
   /* Feature Icon Colors */
   --icon-magenta: #d100d9;
   --icon-light-blue: #2e95f4;
   --icon-green: #43c478;
   --icon-blue: #0c78dc;
-  
+
 
   --why-choose-primary: #4A40FF;
   --why-choose-accent: #52EBAC;
@@ -68,18 +73,20 @@ html {
   --why-choose-border: rgba(74, 64, 255, 0.15);
   --why-choose-bg-gradient-start: rgba(74, 64, 255, 0.08);
   --why-choose-bg-gradient-end: rgba(82, 235, 172, 0.08);
- 
-    --why-row-from: rgba(220, 237, 253, 0.55);
-    --why-row-to: rgba(255, 255, 255, 1);
 
-    --footer-bg-from: var(--color-blue-600);   /* #0d4ea6 */
-    --footer-bg-to: var(--color-endevour-700); /* #113261 */
-  
-    --footer-btn-chat: #4a80ff;
-    --footer-btn-meet: #9874f6;
-    --footer-btn-email: #ffb800;
-  
-    --footer-star: #ffb800;
+  --why-row-from: rgba(220, 237, 253, 0.55);
+  --why-row-to: rgba(255, 255, 255, 1);
+
+  --footer-bg-from: var(--color-blue-600);
+  /* #0d4ea6 */
+  --footer-bg-to: var(--color-endevour-700);
+  /* #113261 */
+
+  --footer-btn-chat: #4a80ff;
+  --footer-btn-meet: #9874f6;
+  --footer-btn-email: #ffb800;
+
+  --footer-star: #ffb800;
 
 }
 
@@ -88,6 +95,7 @@ html {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -118,4 +126,17 @@ html {
 
 .iti input {
   width: 100% !important;
+}
+
+
+.iti__country-list {
+  max-height: 120px !important;
+  @media (min-width: 1600px) {
+    max-height: 180px !important;
+  }
+}
+
+/* Hide scrollbar on swipe carousel (mobile) */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }

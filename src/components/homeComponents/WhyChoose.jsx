@@ -391,7 +391,7 @@ const WhyChoose = () => {
               return (
                 <motion.div
                   key={`${index}-${animationKey}`}
-                  className="grid grid-cols-4 gap-4 px-8 py-7 border-b last:border-b-0 transition-all duration-300 ease-in-out transform hover:scale-[1.01] hover:shadow-md group"
+                  className="grid grid-cols-4 gap-4 px-8 py-7 border-b last:border-b-0 transition-shadow duration-300 ease-in-out hover:shadow-md group"
                   style={{
                     borderColor: "rgba(212,228,250,0.7)",
                     background:
@@ -399,12 +399,11 @@ const WhyChoose = () => {
                   }}
                   initial={{ opacity: 0, x: -50 }}
                   animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
-                  transition={{ 
-                    duration: 0.6, 
+                  transition={{
+                    duration: 0.6,
                     delay: 0.8 + (index * 0.1),
-                    ease: "easeOut"
+                    ease: "easeOut",
                   }}
-                  whileHover={{ scale: 1.01, x: 5 }}
                 >
                   {/* Feature */}
                   <div className="flex items-center gap-3">
