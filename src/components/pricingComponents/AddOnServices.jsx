@@ -37,6 +37,7 @@ const AddOnServices = () => {
         "Complete visa processing service for company employees including paperwork and approvals.",
       priceAmount: 1000,
       priceSuffix: "/ employee",
+      governmentFees: true,
     },
     {
       id: 2,
@@ -49,6 +50,7 @@ const AddOnServices = () => {
         "Facilitate visa issuance for shareholders including documentation and government liaison.",
       priceAmount: 1500,
       priceSuffix: "/ shareholder",
+      governmentFees: true,
     },
     {
       id: 3,
@@ -222,7 +224,7 @@ const AddOnServices = () => {
           return (
             <div
               key={service.id}
-              className="rounded-xl p-4 sm:p-6 border relative transition-all duration-300 ease-in-out transform hover:scale-[1.03] hover:shadow-xl group"
+              className="flex flex-col h-full rounded-xl p-4 sm:p-6 border relative transition-all duration-300 ease-in-out transform hover:scale-[1.03] hover:shadow-xl group"
               style={{
                 border: "1px solid rgba(46,149,244,0.26)",
                 background: "rgba(255,255,255,0.9)",
@@ -231,72 +233,75 @@ const AddOnServices = () => {
             >
               {/* Label Badge */}
               <div className="absolute top-3 right-3 sm:top-4 sm:right-4">
-                <span
-                  className="px-2 py-1 rounded-full text-xs font-semibold"
-                  style={{
-                    background: "rgba(46,149,244,0.10)",
-                    color: "var(--color-primary-600)",
-                  }}
-                >
+                <span className="px-2 py-1 rounded-full text-[10px] font-medium   bg-gray-200 text-gray-700">
                   {service.label}
                 </span>
               </div>
 
-              {/* Icon */}
-              <div
-                className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center mb-3 sm:mb-4 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3"
-                style={{
-                  background: (() => {
-                    if (service.iconColor === "var(--color-primary-600)") {
-                      return "rgba(12,120,220,0.15)";
-                    }
-                    if (service.iconColor.startsWith("#")) {
-                      // Convert hex to rgba with 15% opacity
-                      const hex = service.iconColor.replace("#", "");
-                      const r = parseInt(hex.substring(0, 2), 16);
-                      const g = parseInt(hex.substring(2, 4), 16);
-                      const b = parseInt(hex.substring(4, 6), 16);
-                      return `rgba(${r},${g},${b},0.15)`;
-                    }
-                    return "rgba(46,149,244,0.15)";
-                  })(),
-                }}
-              >
-                <Icon
-                  className="w-6 h-6 transition-transform duration-300"
+              <div className="flex-1 flex flex-col min-h-0">
+                {/* Icon */}
+                <div
+                  className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center mb-3 sm:mb-4 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3"
                   style={{
-                    color: service.iconColor,
+                    background: (() => {
+                      if (service.iconColor === "var(--color-primary-600)") {
+                        return "rgba(12,120,220,0.15)";
+                      }
+                      if (service.iconColor.startsWith("#")) {
+                        // Convert hex to rgba with 15% opacity
+                        const hex = service.iconColor.replace("#", "");
+                        const r = parseInt(hex.substring(0, 2), 16);
+                        const g = parseInt(hex.substring(2, 4), 16);
+                        const b = parseInt(hex.substring(4, 6), 16);
+                        return `rgba(${r},${g},${b},0.15)`;
+                      }
+                      return "rgba(46,149,244,0.15)";
+                    })(),
                   }}
-                />
+                >
+                  <Icon
+                    className="w-6 h-6 transition-transform duration-300"
+                    style={{
+                      color: service.iconColor,
+                    }}
+                  />
+                </div>
+
+                {/* Title */}
+                <h3 className="text-lg sm:text-xl font-bold text-[var(--color-text-primary)] mb-2">
+                  {service.title}
+                </h3>
+
+                {/* Description */}
+                <p className="text-xs sm:text-sm text-[var(--color-text-secondary)] mb-3 sm:mb-4">
+                  {displayDescription}
+                </p>
+
+                {/* Custom Dropdown */}
+                {service.hasDropdown && (
+                  <DropDownSelect
+                    options={service.dropdownOptions}
+                    selectedIndex={selectedOptionIndex}
+                    onSelect={(index) =>
+                      setSelectedOptions({
+                        ...selectedOptions,
+                        [serviceKey]: index,
+                      })
+                    }
+                  />
+                )}
               </div>
 
-              {/* Title */}
-              <h3 className="text-lg sm:text-xl font-bold text-[var(--color-text-primary)] mb-2">
-                {service.title}
-              </h3>
-
-              {/* Description */}
-              <p className="text-xs sm:text-sm text-[var(--color-text-secondary)] mb-3 sm:mb-4">
-                {displayDescription}
-              </p>
-
-              {/* Custom Dropdown */}
-              {service.hasDropdown && (
-                <DropDownSelect
-                  options={service.dropdownOptions}
-                  selectedIndex={selectedOptionIndex}
-                  onSelect={(index) =>
-                    setSelectedOptions({
-                      ...selectedOptions,
-                      [serviceKey]: index,
-                    })
-                  }
-                />
-              )}
-
-              {/* Price */}
-              <div className="text-lg sm:text-xl font-medium text-[var(--color-primary-600)] mt-3 sm:mt-4">
-                {formatPrice(displayPriceAmount, { suffix: displayPriceSuffix })}
+              {/* Price - aligned at bottom */}
+              <div className="mt-auto pt-3 sm:pt-4 space-y-0.5">
+                <div className="text-lg font-medium">
+                  {formatPrice(displayPriceAmount, {
+                    suffix: displayPriceSuffix,
+                  })}
+                </div>
+                {service.governmentFees && (
+                  <div className="text-xs text-gray-600">+ Government Fees</div>
+                )}
               </div>
             </div>
           );

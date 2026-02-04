@@ -50,7 +50,7 @@ const NewBusinessPricing = ({ onViewAddOn }) => {
       badge: "ALL INCLUSIVE SELECTION",
       title: "Strategic Success",
       description:
-        "Premium business support with company setup, end-to-end compliance, accounting, and payroll.",
+       " Premium integrated business support with company setup, end-to-end compliance, accounting, and payroll.",
       priceKey: "strategic-success",
       priceAmount: 8610,
       features: [
@@ -230,7 +230,7 @@ const NewBusinessPricing = ({ onViewAddOn }) => {
               {/* Price */}
               <div
                 className={` ${
-                  index == 0 ? "mt-20 3xl:mt-8 " : "mt-6 md:mt-8"
+                  index == 0 ? "mt-20 xl:mt-14 3xl:mt-8 " : "mt-6 md:mt-8"
                 }`}
               >
                 {pkg.originalPriceAmount ? (

@@ -27,7 +27,7 @@ const DropDownSelect = ({ options, selectedIndex, onSelect }) => {
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="w-full px-3 py-2.5 rounded-lg text-sm text-left flex items-center justify-between transition-all"
+        className="w-full px-3 py-2.5 rounded-lg text-xs text-left flex items-center justify-between transition-all"
         style={{
           border: "1px solid rgba(46,149,244,0.26)",
           background: "white",
@@ -65,7 +65,7 @@ const DropDownSelect = ({ options, selectedIndex, onSelect }) => {
                 type="button"
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={() => handleSelect(index)}
-                className={`w-full px-3 py-2.5 text-sm text-left transition-all ${
+                className={`w-full px-3 py-2.5 text-xs text-left transition-all ${
                   selectedIndex === index
                     ? "bg-[rgba(46,149,244,0.15)] text-[var(--color-primary-600)] font-medium"
                     : "text-[var(--color-text-primary)] hover:bg-[rgba(46,149,244,0.08)]"

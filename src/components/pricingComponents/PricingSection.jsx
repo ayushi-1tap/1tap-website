@@ -41,7 +41,7 @@ const PricingSection = () => {
       ref={sectionRef}
       className="w-full py-12 md:py-14 relative bg-[var(--color-bg-white)]"
     >
-      <div className="relative max-w-[85%] md:max-w-[93%] 3xl:max-w-[85%] mx-auto md:px-4 ">
+      <div className="relative max-w-[85%] md:max-w-[93%] 3xl:max-w-[85%] mx-auto ">
         {/* Header */}
         <div className="text-center mb-8" ref={headingRef}>
           <h1 className="text-2xl md:text-5xl lg:text-[56px] leading-tight font-bold mb-4">
